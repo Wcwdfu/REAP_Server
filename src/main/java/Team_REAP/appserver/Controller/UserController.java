@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
 
-    @PostMapping("")
-    public String create(@RequestParam String name) {
-        return userService.create(name);
-    }
+//    @PostMapping("")
+//    public String create(@RequestParam String name) {
+//        return userService.create(name);
+//    }
 
     @GetMapping("")
     public User read(@RequestParam String id) {
