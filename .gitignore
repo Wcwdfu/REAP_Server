@@ -35,3 +35,12 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### GPT ###
+src/main/resources/application-gpt.properties
+
+### STT ###
+src/main/resources/application-stt.properties
+
+### DB ###
+src/main/resources/application-db.properties
