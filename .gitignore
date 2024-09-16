@@ -44,3 +44,6 @@ src/main/resources/application-stt.properties
 
 ### DB ###
 src/main/resources/application-db.properties
+
+### AWS ###
+src/main/resources/application-aws.properties
