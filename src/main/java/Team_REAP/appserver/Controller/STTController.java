@@ -41,7 +41,7 @@ public class STTController {
     public ResponseEntity<String> recognizeMediaFromURL(@RequestParam("media") MultipartFile media,
                                                         @RequestParam("date") String date,
                                                         @RequestParam("language") String language,
-                                                        @RequestParam(value = "completion", required = false) String completion,
+                                                        @RequestParam(value = "completion", required = false, defaultValue = "sync") String completion, // default가 async이다.
                                                         @RequestParam(value = "callback", required = false) String callback,
                                                         @RequestParam(value = "wordAlignment", required = false, defaultValue = "true") boolean wordAlignment,
                                                         @RequestParam(value = "fullText", required = false, defaultValue = "true") boolean fullText,
