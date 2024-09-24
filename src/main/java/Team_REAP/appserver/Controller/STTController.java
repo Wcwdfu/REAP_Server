@@ -1,5 +1,6 @@
 package Team_REAP.appserver.Controller;
 
+import Team_REAP.appserver.Service.S3Service;
 import Team_REAP.appserver.Service.STTService;
 import Team_REAP.appserver.Service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -39,15 +41,14 @@ public class STTController {
 
     @PostMapping("/recognize-url")
     public ResponseEntity<String> recognizeMediaFromURL(@RequestParam("media") MultipartFile media,
-                                                        @RequestParam("date") String date,
                                                         @RequestParam("language") String language,
                                                         @RequestParam(value = "completion", required = false, defaultValue = "sync") String completion, // default가 async이다.
                                                         @RequestParam(value = "callback", required = false) String callback,
                                                         @RequestParam(value = "wordAlignment", required = false, defaultValue = "true") boolean wordAlignment,
                                                         @RequestParam(value = "fullText", required = false, defaultValue = "true") boolean fullText,
                                                         @RequestParam(value = "resultToObs", required = false, defaultValue = "false") boolean resultToObs,
-                                                        @RequestParam(value = "noiseFiltering", required = false, defaultValue = "true") boolean noiseFiltering) {
+                                                        @RequestParam(value = "noiseFiltering", required = false, defaultValue = "true") boolean noiseFiltering) throws IOException {
 
-        return sttService.audioToText(media, date, language, completion, callback, wordAlignment, fullText, resultToObs, noiseFiltering);
+        return sttService.audioToText(media, language, completion, callback, wordAlignment, fullText, resultToObs, noiseFiltering);
     }
 }

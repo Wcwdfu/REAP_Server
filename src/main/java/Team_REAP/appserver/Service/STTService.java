@@ -1,9 +1,11 @@
 package Team_REAP.appserver.Service;
 
+import Team_REAP.appserver.util.HashUtils;
 import Team_REAP.appserver.util.MetadataUtils;
 
 
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -38,81 +41,44 @@ public class STTService {
     
     private final MetadataUtils metadataUtils;
 
-    public ResponseEntity<String> audioToText(MultipartFile media, String date, String language, String completion, String callback, boolean wordAlignment, boolean fullText, boolean resultToObs, boolean noiseFiltering) {
+    private final S3Service s3Service;
+
+    public ResponseEntity<String> audioToText(MultipartFile media, String language, String completion, String callback, boolean wordAlignment, boolean fullText, boolean resultToObs, boolean noiseFiltering) throws IOException {
+
+        // S3에 파일 저장
+        String fileName = media.getOriginalFilename();
+        String extend = media.getOriginalFilename().substring(media.getOriginalFilename().lastIndexOf("."));
+        String url = s3Service.upload(fileName, media, extend);
+
 
         File tempFile = null;
         IsoFile isoFile = null;
         try {
-
-            /*
-             * 메타 데이터를 통해서 음성 생성 시간 받아오기
-             * */
-            // MultipartFile을 임시 파일로 저장
             tempFile = metadataUtils.saveMultipleFileToTmpFile(media);
-            
-            // MP4 파일 메타데이터 읽기
-            LocalDateTime creationDateTime = metadataUtils.readCreationTimeFromMp4(tempFile);
-            
-            // 시간대를 변환 (예: 한국 시간대로 변환)
-            LocalDateTime creationDateTimeKST = metadataUtils.convertToKST(creationDateTime);
-
-            // 날짜와 시간 부분만 추출
-            //String creationDateKST = metadataUtils.formatDateTime(creationDateTime, "yyyy-MM-dd");
-            //String creationTimeKST = metadataUtils.formatDateTime(creationDateTime, "HH:mm:ss");
-
-            //log.info("Creation Date (KST): " + creationDateKST);
-            //log.info("Creation Time (KST): " + creationTimeKST);
-
-            /*
-             * NaverCloud에 STT 요청하기
-             * */
             ResponseEntity<String> responseEntity = requestSttToNaverCloud(tempFile, language, completion, callback, wordAlignment, fullText, resultToObs, noiseFiltering);
 
 
+            //메타 데이터를 통해서 음성 생성 시간 받아오기
+            // MP4 파일 메타데이터 읽기
+            LocalDateTime creationDateTime = metadataUtils.readCreationTimeFromMp4(tempFile);
+            LocalDateTime creationDateTimeKST = metadataUtils.convertToKST(creationDateTime);
+
+            // 날짜와 시간 부분만 추출
+            String creationDateKST = metadataUtils.formatDateTime(creationDateTime, "yyyy-MM-dd");
+            //log.info("Creation Date (KST): " + creationDateKST); - 녹음한 날짜
+            //log.info("Creation Time (KST): " + creationTimeKST); - 녹음한 시간
+
+            // 대화 스크립트 제작 ( ReponseEntity<String>, LocalDateTime);
+            StringBuilder recordInfo = makeScript(responseEntity, creationDateTimeKST);
+            // TODO : 녹음 파일 고유 식별자 만들기
             /*
-            * 대화 스크립트 제작
-            * */
-            String responseBody = responseEntity.getBody();
-            JSONObject jsonObject = new JSONObject(responseBody);
-            JSONArray segments = jsonObject.getJSONArray("segments");
-
-            // 대화 스크립트
-            StringBuilder recordInfo = new StringBuilder();
-
-            // 누적 시간을 저장할 변수
-            Duration totalDuration = Duration.ZERO;
-
-            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-
-            // GPT에게 요청해서 답변 받아오기 + 스크립트 만들기
-            log.info("대화 스크립트 만들기");
-            for (int i = 0; i < segments.length(); i++) {
-                JSONObject segment = segments.getJSONObject(i);
-                int start = segment.getInt("start");
-                int end = segment.getInt("end");
-                String text = segment.getString("text");
-                String speakerName = segment.getJSONObject("speaker").getString("name");
-
-                // start와 end의 차이를 계산하여 누적 시간에 더하기
-                int durationMillis = end - start;
-                totalDuration = totalDuration.plusMillis(durationMillis);
-
-                // 누적 시간을 creationDateTimeKST에 더하기
-                LocalDateTime adjustedDateTimeKST = creationDateTimeKST.plus(totalDuration);
-
-                String adjustedDateKST = adjustedDateTimeKST.format(dateFormatter);
-                String adjustedTimeKST = adjustedDateTimeKST.format(timeFormatter);
-
-                recordInfo.append(adjustedDateKST).append(" ");
-                recordInfo.append(adjustedTimeKST).append(" ");
-                recordInfo.append(speakerName).append(" ");
-                recordInfo.append(text).append("\n");
-
-                log.info("userService 이용");
-                userService.create(speakerName, adjustedDateKST, adjustedTimeKST, text);
-            }
-
+                recordId : 녹음 파일 고유 식별자
+                creationDateTimeKST : 녹음 파일이 생성된 날짜
+                recordInfo : 대화 스크립트
+            */
+            String recordId = HashUtils.generateFileHash(tempFile);
+            String script = recordInfo.toString();
+            userService.createAll(recordId, creationDateKST, script);
             // 전체 녹음 스크립트
             log.info("{}", recordInfo);
 
@@ -124,6 +90,51 @@ public class STTService {
             closeIsoFile(isoFile);
             deleteTmpFile(tempFile);
         }
+    }
+
+    @NotNull
+    private static StringBuilder makeScript(ResponseEntity<String> responseEntity, LocalDateTime creationDateTimeKST) {
+        String responseBody = responseEntity.getBody();
+        JSONObject jsonObject = new JSONObject(responseBody);
+        JSONArray segments = jsonObject.getJSONArray("segments");
+
+        // 대화 스크립트
+        StringBuilder recordInfo = new StringBuilder();
+
+        // 누적 시간을 저장할 변수
+        Duration totalDuration = Duration.ZERO;
+
+        //DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+
+        // 스크립트 만들기
+        log.info("대화 스크립트 만들기");
+        for (int i = 0; i < segments.length(); i++) {
+            JSONObject segment = segments.getJSONObject(i);
+            int start = segment.getInt("start");
+            int end = segment.getInt("end");
+            String text = segment.getString("text");
+            String speakerName = segment.getJSONObject("speaker").getString("name");
+
+            // start와 end의 차이를 계산하여 누적 시간에 더하기
+            int durationMillis = end - start;
+            totalDuration = totalDuration.plusMillis(durationMillis);
+
+            // 누적 시간을 creationDateTimeKST에 더하기
+            LocalDateTime adjustedDateTimeKST = creationDateTimeKST.plus(totalDuration);
+
+            // String adjustedDateKST = adjustedDateTimeKST.format(dateFormatter);
+            String adjustedTimeKST = adjustedDateTimeKST.format(timeFormatter);
+
+            // recordInfo.append(adjustedDateKST).append(" ");
+            recordInfo.append(adjustedTimeKST).append(" ");
+            recordInfo.append(speakerName).append(" ");
+            recordInfo.append(text).append("\n");
+
+            log.info("userService 이용");
+            // userService.create(speakerName, adjustedDateKST, adjustedTimeKST, text);
+        }
+        return recordInfo;
     }
 
     private ResponseEntity<String> requestSttToNaverCloud(File tempFile, String language, String completion, String callback, boolean wordAlignment, boolean fullText, boolean resultToObs, boolean noiseFiltering) {

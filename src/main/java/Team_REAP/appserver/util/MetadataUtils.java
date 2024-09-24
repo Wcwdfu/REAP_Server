@@ -21,9 +21,7 @@ public class MetadataUtils {
 
     // 임시 파일 생성 및 저장 메서드
     public File saveMultipleFileToTmpFile(MultipartFile media) throws IOException {
-        /*
-         * 메타 데이터를 통해서 음성 생성 시간 받아오기
-         * */
+
         // MultipartFile을 임시 파일로 저장
         log.info("MultipartFile을 임시 파일로 저장");
         File tempFile = Files.createTempFile("upload", media.getOriginalFilename()).toFile();

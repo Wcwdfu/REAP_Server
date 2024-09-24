@@ -1,5 +1,6 @@
 package Team_REAP.appserver.Service;
 
+import Team_REAP.appserver.Entity.Record;
 import Team_REAP.appserver.Entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -9,6 +10,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -16,7 +18,7 @@ import java.util.List;
 public class UserService {
     private final MongoTemplate mongoTemplate;
 
-    public String create(String name, String date,String time, String text) {
+    public String create(String name, String date,String time,String text) { // 곧 안 쓸 예정
         User user = User.builder()
                 .name(name)
                 .date(date)
@@ -25,6 +27,17 @@ public class UserService {
                 .build();
 
         return mongoTemplate.insert(user, "user").getId();
+    }
+
+    public String createAll(String recordId, String date, String text) { // 녹음 파일 스크립트로 만든 것 저장
+
+        Record record = Record.builder()
+                .recordId(recordId)
+                .date(date)
+                .text(text)
+                .build();
+
+        return mongoTemplate.insert(record, "record").getId();
     }
 
     public User read(String id) {
@@ -83,4 +96,6 @@ public class UserService {
 
         mongoTemplate.remove(query, User.class, "members");
     }
+
+
 }
