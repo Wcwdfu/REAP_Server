@@ -30,7 +30,6 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class STTService {
-    //@Value("${naver.cloud.invoke.url}")
     @Value("${naver.cloud.invoke.url}")
     private String apiUrl;
 

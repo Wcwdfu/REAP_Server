@@ -3,6 +3,7 @@ package Team_REAP.appserver.Controller;
 import Team_REAP.appserver.Service.S3Service;
 import Team_REAP.appserver.Service.STTService;
 import Team_REAP.appserver.Service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -39,6 +40,7 @@ public class STTController {
     private final STTService sttService;
 
 
+    @Operation(summary = "음성 -> S3저장, 스크립트 변환 후 DB 저장")
     @PostMapping("/recognize-url")
     public ResponseEntity<String> recognizeMediaFromURL(@RequestParam("media") MultipartFile media,
                                                         @RequestParam("language") String language,
