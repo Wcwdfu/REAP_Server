@@ -61,16 +61,4 @@ public class ReapController {
         userService.delete(id);
     }
 
-    private void parsing(String content) {
-        // JSON 파싱하여 ID와 날짜 추출
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.readTree(content);
-
-            this.id = jsonNode.get("ID").asInt();
-            this.date = jsonNode.get("date").asText();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }
