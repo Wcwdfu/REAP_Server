@@ -1,4 +1,4 @@
-package Team_REAP.appserver.dto;
+package Team_REAP.appserver.dto.gpt;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

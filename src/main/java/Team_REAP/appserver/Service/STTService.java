@@ -1,5 +1,6 @@
 package Team_REAP.appserver.Service;
 
+import Team_REAP.appserver.Entity.Record;
 import Team_REAP.appserver.util.HashUtils;
 import Team_REAP.appserver.util.MetadataUtils;
 
@@ -77,11 +78,12 @@ public class STTService {
             */
             String recordId = HashUtils.generateFileHash(tempFile);
             String script = recordInfo.toString();
-            userService.createAll(recordId, creationDateKST, script);
+            String objectId = userService.createAll(recordId, creationDateKST, script);
+
             // 전체 녹음 스크립트
             log.info("{}", recordInfo);
 
-            return responseEntity;
+            return ResponseEntity.status(HttpStatus.OK).body(objectId);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred: " + e.getMessage());

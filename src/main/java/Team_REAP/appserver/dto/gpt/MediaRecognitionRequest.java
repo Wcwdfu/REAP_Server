@@ -1,4 +1,4 @@
-package Team_REAP.appserver.dto;
+package Team_REAP.appserver.dto.gpt;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,8 +1,8 @@
 package Team_REAP.appserver.Service;
 
 import Team_REAP.appserver.Entity.User;
-import Team_REAP.appserver.dto.GPTRequest;
-import Team_REAP.appserver.dto.GPTResponse;
+import Team_REAP.appserver.dto.gpt.GPTRequest;
+import Team_REAP.appserver.dto.gpt.GPTResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

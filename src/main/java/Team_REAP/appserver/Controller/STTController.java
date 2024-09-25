@@ -1,5 +1,6 @@
 package Team_REAP.appserver.Controller;
 
+import Team_REAP.appserver.Entity.Record;
 import Team_REAP.appserver.Service.S3Service;
 import Team_REAP.appserver.Service.STTService;
 import Team_REAP.appserver.Service.UserService;

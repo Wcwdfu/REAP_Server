@@ -24,7 +24,7 @@ public class S3Controller {
                                               @RequestPart("audioFile") MultipartFile multipartFile) throws IOException {
 
         String extend = multipartFile.getOriginalFilename().substring(multipartFile.getOriginalFilename().lastIndexOf("."));
-        String url = s3Service.upload(fileName, multipartFile, extend);
+        String url = s3Service.upload(fileName, multipartFile, extend); // filename, multipartFile, extend
 
         log.info(url);
         return new ResponseEntity<>(url,null, HttpStatus.OK);
