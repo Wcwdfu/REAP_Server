@@ -47,3 +47,6 @@ src/main/resources/application-db.properties
 
 ### AWS ###
 src/main/resources/application-aws.properties
+
+application.properties
+application.yml
