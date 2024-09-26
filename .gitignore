@@ -48,5 +48,8 @@ src/main/resources/application-db.properties
 ### AWS ###
 src/main/resources/application-aws.properties
 
+### oauth2 ###
+src/main/resources/application-oauth2.properties
+
 application.properties
 application.yml

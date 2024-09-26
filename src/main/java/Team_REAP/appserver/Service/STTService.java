@@ -48,6 +48,8 @@ public class STTService {
         File tempFile = null;
         IsoFile isoFile = null;
         try {
+
+            // 임시 파일 생성
             tempFile = metadataUtils.saveMultipleFileToTmpFile(media);
             ResponseEntity<String> responseEntity = requestSttToNaverCloud(tempFile, language, completion, callback, wordAlignment, fullText, resultToObs, noiseFiltering);
 
@@ -72,7 +74,8 @@ public class STTService {
 
             // S3에 파일 저장
             String fileName = media.getOriginalFilename();
-            String url = s3Service.upload(tempFile, fileName, userName, creationDateKST); // ?
+            String AudioUrl = s3Service.upload(tempFile, fileName, userName, creationDateKST); // ?
+
 
             // 전체 녹음 스크립트
             log.info("{}", recordInfo);
@@ -122,14 +125,17 @@ public class STTService {
             int durationMillis = end - start;
             totalDuration = totalDuration.plusMillis(durationMillis);
 
-            // 누적 시간을 creationDateTimeKST에 더하기
-            LocalDateTime adjustedDateTimeKST = creationDateTimeKST.plus(totalDuration);
+            // start를 LocalDateTime으로 변환
+            LocalTime startTime = LocalTime.MIDNIGHT.plus(Duration.ofMillis(start));
+            String elapseTime = startTime.format(timeFormatter);
 
-            // String adjustedDateKST = adjustedDateTimeKST.format(dateFormatter);
+            // 누적된 시간을 기준으로 실제 시간 계산
+            LocalDateTime adjustedDateTimeKST = creationDateTimeKST.plus(totalDuration);
             String adjustedTimeKST = adjustedDateTimeKST.format(timeFormatter);
 
-            // recordInfo.append(adjustedDateKST).append(" ");
-            recordInfo.append(adjustedTimeKST).append(" ");
+            // recordInfo에 시간 정보와 대화 내용 추가
+            recordInfo.append(adjustedTimeKST).append(" ");   // 실제 시간
+            recordInfo.append(elapseTime).append(" "); // 누적 시간
             recordInfo.append(speakerName).append(" ");
             recordInfo.append(text).append("\n");
 
