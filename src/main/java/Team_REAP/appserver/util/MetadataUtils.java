@@ -34,11 +34,13 @@ public class MetadataUtils {
     public LocalDateTime readCreationTimeFromMp4(File tempFile) throws IOException {
         log.info("MP4 파일 메타데이터 읽기");
         // MP4 파일 메타데이터 읽기
-        IsoFile isoFile = new IsoFile(tempFile.getAbsolutePath());
-        log.info(tempFile.getAbsolutePath());
-        MovieHeaderBox mvhd = isoFile.getBoxes(MovieHeaderBox.class, true).get(0);
-        long creationTime = mvhd.getCreationTime().getTime();
-        return LocalDateTime.ofInstant(Instant.ofEpochMilli(creationTime), ZoneOffset.UTC);
+        try(IsoFile isoFile = new IsoFile(tempFile.getAbsolutePath())) {
+            log.info(tempFile.getAbsolutePath());
+            MovieHeaderBox mvhd = isoFile.getBoxes(MovieHeaderBox.class, true).get(0);
+            long creationTime = mvhd.getCreationTime().getTime();
+
+            return LocalDateTime.ofInstant(Instant.ofEpochMilli(creationTime), ZoneOffset.UTC);
+        }
     }
 
     // UTC 시간을 KST로 변환하는 메서드

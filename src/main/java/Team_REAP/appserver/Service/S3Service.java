@@ -46,6 +46,16 @@ public class S3Service {
         return uploadImageUrl;      // 업로드된 파일의 S3 URL 주소 반환
     }
 
+    public String upload(File uploadFile, String fileName, String userName, String audioDate) {
+
+        String newFileName = userName + "/" + audioDate  + "/" + fileName;
+        String uploadImageUrl = putS3(uploadFile, newFileName);
+
+        removeNewFile(uploadFile);  // convert()함수로 인해서 로컬에 생성된 File 삭제 (MultipartFile -> File 전환 하며 로컬에 파일 생성됨)
+
+        return uploadImageUrl;      // 업로드된 파일의 S3 URL 주소 반환
+    }
+
     private String putS3(File uploadFile, String fileName) {
         amazonS3.putObject(
                 new PutObjectRequest(bucket, fileName, uploadFile));

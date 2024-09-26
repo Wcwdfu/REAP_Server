@@ -44,6 +44,7 @@ public class STTController {
     @Operation(summary = "음성 -> S3저장, 스크립트 변환 후 DB 저장")
     @PostMapping("/recognize-url")
     public ResponseEntity<String> recognizeMediaFromURL(@RequestParam("media") MultipartFile media,
+                                                        @RequestParam("user") String userName,
                                                         @RequestParam("language") String language,
                                                         @RequestParam(value = "completion", required = false, defaultValue = "sync") String completion, // default가 async이다.
                                                         @RequestParam(value = "callback", required = false) String callback,
@@ -52,6 +53,6 @@ public class STTController {
                                                         @RequestParam(value = "resultToObs", required = false, defaultValue = "false") boolean resultToObs,
                                                         @RequestParam(value = "noiseFiltering", required = false, defaultValue = "true") boolean noiseFiltering) throws IOException {
 
-        return sttService.audioToText(media, language, completion, callback, wordAlignment, fullText, resultToObs, noiseFiltering);
+        return sttService.audioToText(media, userName, language, completion, callback, wordAlignment, fullText, resultToObs, noiseFiltering);
     }
 }

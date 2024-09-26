@@ -43,13 +43,7 @@ public class STTService {
 
     private final S3Service s3Service;
 
-    public ResponseEntity<String> audioToText(MultipartFile media, String language, String completion, String callback, boolean wordAlignment, boolean fullText, boolean resultToObs, boolean noiseFiltering) throws IOException {
-
-        // S3에 파일 저장
-        String fileName = media.getOriginalFilename();
-        String extend = media.getOriginalFilename().substring(media.getOriginalFilename().lastIndexOf("."));
-        String url = s3Service.upload(fileName, media, extend);
-
+    public ResponseEntity<String> audioToText(MultipartFile media, String userName, String language, String completion, String callback, boolean wordAlignment, boolean fullText, boolean resultToObs, boolean noiseFiltering) throws IOException {
 
         File tempFile = null;
         IsoFile isoFile = null;
@@ -70,15 +64,15 @@ public class STTService {
 
             // 대화 스크립트 제작 ( ReponseEntity<String>, LocalDateTime);
             StringBuilder recordInfo = makeScript(responseEntity, creationDateTimeKST);
-            // TODO : 녹음 파일 고유 식별자 만들기
-            /*
-                recordId : 녹음 파일 고유 식별자
-                creationDateTimeKST : 녹음 파일이 생성된 날짜
-                recordInfo : 대화 스크립트
-            */
+
+
             String recordId = HashUtils.generateFileHash(tempFile);
             String script = recordInfo.toString();
-            String objectId = userService.createAll(recordId, creationDateKST, script);
+            String objectId = userService.createAll(recordId, creationDateKST, script); // ?
+
+            // S3에 파일 저장
+            String fileName = media.getOriginalFilename();
+            String url = s3Service.upload(tempFile, fileName, userName, creationDateKST); // ?
 
             // 전체 녹음 스크립트
             log.info("{}", recordInfo);
@@ -88,8 +82,15 @@ public class STTService {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred: " + e.getMessage());
         } finally {
-            closeIsoFile(isoFile);
-            deleteTmpFile(tempFile);
+            log.info(tempFile.getAbsolutePath());
+            // isofile 닫는건 늘 false
+            // IsoFile을 사용한 후 닫아줌, 사용 중이면 파일이 삭제가 안 된다.
+            if (tempFile != null && tempFile.exists()) {
+                boolean deleted = tempFile.delete();
+                if (!deleted) {
+                    log.error("임시 파일 삭제에 실패했습니다.");
+                }
+            }
         }
     }
 
@@ -172,23 +173,5 @@ public class STTService {
         return responseEntity;
     }
 
-    private static void deleteTmpFile(File tempFile) {
-        // IsoFile을 사용한 후 닫아줌, 사용 중이면 파일이 삭제가 안 된다.
-        if (tempFile != null && tempFile.exists()) {
-            boolean deleted = tempFile.delete();
-            if (!deleted) {
-                log.error("임시 파일 삭제에 실패했습니다.");
-            }
-        }
-    }
 
-    private static void closeIsoFile(IsoFile isoFile) {
-        if (isoFile != null) {
-            try {
-                isoFile.close();
-            } catch (Exception e) {
-                log.error("IsoFile을 닫는 중 오류가 발생했습니다: " + e.getMessage());
-            }
-        }
-    }
 }
