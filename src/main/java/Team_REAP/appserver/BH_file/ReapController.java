@@ -2,7 +2,7 @@ package Team_REAP.appserver.BH_file;
 
 
 import Team_REAP.appserver.common.user.Entity.User;
-import Team_REAP.appserver.common.user.Repository.UserRepository;
+import Team_REAP.appserver.common.user.Repository.MongoUserRepository;
 import Team_REAP.appserver.BH_file.Service.ReapService;
 import Team_REAP.appserver.BH_file.Service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class ReapController { // gpt한테 뭔가를 물어보면 대답해주�
     private String date;
 
     @Autowired
-    private UserRepository userRepository;
+    private MongoUserRepository mongoUserRepository;
 
     @PostMapping("/{name}/{date}/{time}/{text}")
     public String create(@PathVariable String name, @PathVariable String date, @PathVariable String time, @PathVariable String text) {

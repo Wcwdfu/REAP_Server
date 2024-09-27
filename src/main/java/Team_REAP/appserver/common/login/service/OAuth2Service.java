@@ -1,9 +1,9 @@
-package Team_REAP.appserver.BH_file.Service;
+package Team_REAP.appserver.common.login.service;
 
-import Team_REAP.appserver.common.user.Entity.LoginUser;
-import Team_REAP.appserver.common.user.Entity.OAuthAttributes;
-import Team_REAP.appserver.common.user.Repository.LoginRepository;
-import Team_REAP.appserver.common.user.LoginProfile;
+import Team_REAP.appserver.common.login.domain.User;
+import Team_REAP.appserver.common.login.domain.OAuthAttributes;
+import Team_REAP.appserver.common.login.repository.JpaUserRepository;
+import Team_REAP.appserver.common.login.dto.UserProfile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -20,9 +20,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
-public class LoginService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
+public class OAuth2Service implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
-    private final LoginRepository loginRepository;
+    private final JpaUserRepository jpaUserRepository;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -39,7 +39,7 @@ public class LoginService implements OAuth2UserService<OAuth2UserRequest, OAuth2
 
         Map<String, Object> attributes = oAuth2User.getAttributes(); // 사용자가 가지고 있는 정보
 
-        LoginProfile loginProfile = OAuthAttributes.extract(registrationId, attributes);
+        UserProfile loginProfile = OAuthAttributes.extract(registrationId, attributes);
         loginProfile.setProvider(registrationId);
 
         updateOrSaveUser(loginProfile);
@@ -56,7 +56,7 @@ public class LoginService implements OAuth2UserService<OAuth2UserRequest, OAuth2
     public Map getCustomAttribute(String registrationId,
                                   String userNameAttributeName,
                                   Map<String, Object> attributes,
-                                  LoginProfile loginProfile) {
+                                  UserProfile loginProfile) {
         Map<String, Object> customAttribute = new ConcurrentHashMap<>();
 
         customAttribute.put(userNameAttributeName, attributes.get(userNameAttributeName));
@@ -67,12 +67,12 @@ public class LoginService implements OAuth2UserService<OAuth2UserRequest, OAuth2
         return customAttribute;
     }
 
-    public LoginUser updateOrSaveUser(LoginProfile loginProfile) {
-        LoginUser loginUser = loginRepository
+    public User updateOrSaveUser(UserProfile loginProfile) {
+        User user = jpaUserRepository
                 .findUserByEmailAndProvider(loginProfile.getEmail(), loginProfile.getProvider())
                 .map(value -> value.updateUser(loginProfile.getUsername(), loginProfile.getEmail()))
                 .orElse(loginProfile.toEntity());
 
-        return loginRepository.save(loginUser);
+        return jpaUserRepository.save(user);
     }
 }

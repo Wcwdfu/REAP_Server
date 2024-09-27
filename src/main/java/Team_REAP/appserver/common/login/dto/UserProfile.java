@@ -1,10 +1,10 @@
-package Team_REAP.appserver.common.user;
+package Team_REAP.appserver.common.login.dto;
 
-import Team_REAP.appserver.common.user.Entity.LoginUser;
+import Team_REAP.appserver.common.login.domain.User;
 import lombok.Getter;
 
 @Getter
-public class LoginProfile {
+public class UserProfile {
     private String username; // 사용자 이름
     private String provider; // 로그인한 서비스
     private String email; // 사용자의 이메일
@@ -22,8 +22,8 @@ public class LoginProfile {
     }
 
     // DTO 파일을 통하여 Entity를 생성하는 메소드
-    public LoginUser toEntity() {
-        return LoginUser.builder()
+    public User toEntity() {
+        return User.builder()
                 .username(this.username)
                 .email(this.email)
                 .provider(this.provider)

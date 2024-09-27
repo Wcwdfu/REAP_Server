@@ -1,6 +1,6 @@
 package Team_REAP.appserver.common.Config;
 
-import Team_REAP.appserver.BH_file.Service.LoginService;
+import Team_REAP.appserver.common.login.service.OAuth2Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -11,7 +11,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final LoginService loginService;
+    private final OAuth2Service OAuth2Service;
 
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
@@ -25,9 +25,10 @@ public class SecurityConfig {
 
                 .and()
                 .oauth2Login() // OAuth2를 통한 로그인 사용
-                .defaultSuccessUrl("/oauth/loginInfo", true) // 로그인 성공시 이동할 URL
+                .loginPage("/api/common/login/kakao") // 커스텀 로그인 URL 설정
+                .defaultSuccessUrl("/api/common/login/info", true) // 로그인 성공시 이동할 URL
                 .userInfoEndpoint() // 사용자가 로그인에 성공하였을 경우,
-                .userService(loginService) // 해당 서비스 로직을 타도록 설정
+                .userService(OAuth2Service) // 해당 서비스 로직을 타도록 설정
 
                 .and()
                 .and().build();
