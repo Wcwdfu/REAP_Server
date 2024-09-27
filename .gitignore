@@ -36,6 +36,9 @@ out/
 ### VS Code ###
 .vscode/
 
+### application.properties ###
+/src/main/resources/application.properties
+
 ### GPT ###
 src/main/resources/application-gpt.properties
 
