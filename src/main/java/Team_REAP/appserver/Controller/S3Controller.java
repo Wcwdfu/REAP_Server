@@ -42,4 +42,14 @@ public class S3Controller {
     ) throws IOException {
         return s3Service.download(fileName);
     }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteAudio(@RequestParam String userName,
+                                              @RequestParam String date,
+                                              @RequestParam String fileName){
+
+        s3Service.deleteFile(userName, date, fileName);
+
+        return ResponseEntity.ok("success audio delete");
+    }
 }

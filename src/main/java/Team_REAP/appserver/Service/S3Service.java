@@ -97,4 +97,16 @@ public class S3Service {
         return new ResponseEntity<>(bytes, httpHeaders, HttpStatus.OK);
     }
 
+    public void deleteFile(String userName, String date, String fileName){
+        try {
+            String path = userName + "/" + date + "/" + fileName;
+            // S3 클라이언트를 사용하여 파일 삭제
+            amazonS3.deleteObject(new DeleteObjectRequest(bucket, path));
+            System.out.println("파일이 성공적으로 삭제되었습니다: " + fileName);
+        } catch (Exception e) {
+            System.err.println("파일 삭제 중 오류가 발생했습니다: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
 }
