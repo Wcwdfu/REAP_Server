@@ -25,6 +25,7 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -64,11 +65,8 @@ public class STTService {
             //log.info("Creation Time (KST): " + creationTimeKST); - 녹음한 시간
 
             // 대화 스크립트 제작 ( ReponseEntity<String>, LocalDateTime);
-            StringBuilder recordInfo = makeScript(responseEntity, creationDateTimeKST);
-
-
+            String script = makeScript(responseEntity, creationDateTimeKST);
             String recordId = HashUtils.generateFileHash(tempFile);
-            String script = recordInfo.toString();
             String objectId = userService.createAll(recordId, creationDateKST, script); // ?
 
             // S3에 파일 저장
@@ -77,7 +75,7 @@ public class STTService {
 
 
             // 전체 녹음 스크립트
-            log.info("{}", recordInfo);
+            log.info("{}", script);
 
             return ResponseEntity.status(HttpStatus.OK).body(objectId);
         } catch (Exception e) {
@@ -97,7 +95,7 @@ public class STTService {
     }
 
     @NotNull
-    private static StringBuilder makeScript(ResponseEntity<String> responseEntity, LocalDateTime creationDateTimeKST) {
+    private static String makeScript(ResponseEntity<String> responseEntity, LocalDateTime creationDateTimeKST) {
         String responseBody = responseEntity.getBody();
         JSONObject jsonObject = new JSONObject(responseBody);
         JSONArray segments = jsonObject.getJSONArray("segments");
@@ -112,7 +110,9 @@ public class STTService {
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
         // 스크립트 만들기
+
         log.info("대화 스크립트 만들기");
+        String preSpeakerName = null;
         for (int i = 0; i < segments.length(); i++) {
             JSONObject segment = segments.getJSONObject(i);
             int start = segment.getInt("start");
@@ -133,15 +133,26 @@ public class STTService {
             String adjustedTimeKST = adjustedDateTimeKST.format(timeFormatter);
 
             // recordInfo에 시간 정보와 대화 내용 추가
-            recordInfo.append(adjustedTimeKST).append(" ");   // 실제 시간
-            recordInfo.append(elapseTime).append(" "); // 누적 시간
-            recordInfo.append(speakerName).append(" ");
-            recordInfo.append(text).append("\n");
+            if(!Objects.equals(preSpeakerName, speakerName)){
+                // 화자가 바뀌었으므로 새 줄을 추가
+                if (i != 0) {
+                    recordInfo.append("\n"); // 첫 번째 항목이 아닌 경우 개행 추가
+                }
+                recordInfo.append(adjustedTimeKST).append(" ");   // 실제 시간
+                recordInfo.append(elapseTime).append(" "); // 누적 시간
+                recordInfo.append(speakerName).append(" ");
+                recordInfo.append(text).append(" ");
+            }else{
+                recordInfo.append(text).append(" ");
+            }
+
+            preSpeakerName = speakerName;
 
             log.info("userService 이용");
             // userService.create(speakerName, adjustedDateKST, adjustedTimeKST, text);
         }
-        return recordInfo;
+
+        return recordInfo.toString();
     }
 
     private ResponseEntity<String> requestSttToNaverCloud(File tempFile, String language, String completion, String callback, boolean wordAlignment, boolean fullText, boolean resultToObs, boolean noiseFiltering) {
