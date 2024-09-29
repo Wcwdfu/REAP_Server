@@ -1,5 +1,6 @@
 package Team_REAP.appserver.BH_file.Service;
 
+import Team_REAP.appserver.BH_file.Service.dto.AudioUploadDTO;
 import Team_REAP.appserver.BH_file.util.HashUtils;
 import Team_REAP.appserver.BH_file.util.MetadataUtils;
 
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -43,7 +45,7 @@ public class STTService {
 
     private final S3Service s3Service;
 
-    public ResponseEntity<String> audioToText(MultipartFile media, String userName, String language, String completion, String callback, boolean wordAlignment, boolean fullText, boolean resultToObs, boolean noiseFiltering) throws IOException {
+    public ResponseEntity<Object> audioToText(MultipartFile media, String userName) throws IOException {
 
         File tempFile = null;
         IsoFile isoFile = null;
@@ -51,7 +53,7 @@ public class STTService {
 
             // 임시 파일 생성
             tempFile = metadataUtils.saveMultipleFileToTmpFile(media);
-            ResponseEntity<String> responseEntity = requestSttToNaverCloud(tempFile, language, completion, callback, wordAlignment, fullText, resultToObs, noiseFiltering);
+            ResponseEntity<String> responseEntity = requestSttToNaverCloud(tempFile);
 
 
             //메타 데이터를 통해서 음성 생성 시간 받아오기
@@ -71,14 +73,16 @@ public class STTService {
 
             // S3에 파일 저장
             String fileName = media.getOriginalFilename();
-            String AudioUrl = s3Service.upload(tempFile, fileName, userName, creationDateKST); // ?
+            String audioS3Url = s3Service.upload(tempFile, fileName, userName, creationDateKST); // ?
 
 
             // 전체 녹음 스크립트
             log.info("{}", script);
 
-            return ResponseEntity.status(HttpStatus.OK).body(objectId);
-        } catch (Exception e) {
+            AudioUploadDTO audioUploadDTO = new AudioUploadDTO(audioS3Url);
+
+            return ResponseEntity.status(HttpStatus.OK).body(audioUploadDTO);
+        } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred: " + e.getMessage());
         } finally {
@@ -155,7 +159,7 @@ public class STTService {
         return recordInfo.toString();
     }
 
-    private ResponseEntity<String> requestSttToNaverCloud(File tempFile, String language, String completion, String callback, boolean wordAlignment, boolean fullText, boolean resultToObs, boolean noiseFiltering) {
+    private ResponseEntity<String> requestSttToNaverCloud(File tempFile) {
         String url = apiUrl + "/recognizer/upload";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -166,13 +170,13 @@ public class STTService {
         body.add("media", new FileSystemResource(tempFile));
 
         Map<String, Object> params = new HashMap<>();
-        params.put("language", language);
-        params.put("completion", completion);
-        params.put("callback", callback);
-        params.put("wordAlignment", wordAlignment);
-        params.put("fullText", fullText);
-        params.put("resultToObs", resultToObs);
-        params.put("noiseFiltering", noiseFiltering);
+        params.put("language", "ko-KR");
+        params.put("completion", "sync");
+        params.put("callback", null);
+        params.put("wordAlignment", true);
+        params.put("fullText", true);
+        params.put("resultToObs", false);
+        params.put("noiseFiltering", true);
 
         log.info("JSON 객체로 변환");
         // JSON 객체로 변환
