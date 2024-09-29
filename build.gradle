@@ -59,6 +59,17 @@ dependencies {
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	testImplementation 'org.springframework.security:spring-security-test'
 
+	// open api
+	implementation 'io.spring.ai:spring-ai-openai:1.0.0'
+	//java utility library
+	implementation 'com.google.guava:guava:31.0.1-jre'
+	//deep java library
+	implementation 'ai.djl:api:0.22.0'
+	//pytorch
+	implementation 'ai.djl.pytorch:pytorch-engine:0.22.0'
+	//huggingface
+	implementation 'ai.djl.huggingface:tokenizers:0.22.0'
+
 }
 
 tasks.named('test') {

@@ -1,8 +1,9 @@
-package Team_REAP.appserver.BH_file.Service;
+package Team_REAP.appserver.STT.service;
 
-import Team_REAP.appserver.BH_file.Service.dto.AudioUploadDTO;
-import Team_REAP.appserver.BH_file.util.HashUtils;
-import Team_REAP.appserver.BH_file.util.MetadataUtils;
+import Team_REAP.appserver.DB.mongo.service.MongoUserService;
+import Team_REAP.appserver.STT.dto.AudioUploadDTO;
+import Team_REAP.appserver.Deprecated.HashUtils;
+import Team_REAP.appserver.STT.util.MetadataUtils;
 
 
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +40,7 @@ public class STTService {
     @Value("${naver.cloud.secret.key}")
     private String secretKey;
 
-    private final UserService userService;
+    private final MongoUserService mongoUserService;
     
     private final MetadataUtils metadataUtils;
 
@@ -69,7 +70,7 @@ public class STTService {
             // 대화 스크립트 제작 ( ReponseEntity<String>, LocalDateTime);
             String script = makeScript(responseEntity, creationDateTimeKST);
             String recordId = HashUtils.generateFileHash(tempFile);
-            String objectId = userService.createAll(recordId, creationDateKST, script); // ?
+            String objectId = mongoUserService.createAll(recordId, creationDateKST, script); // ?
 
             // S3에 파일 저장
             String fileName = media.getOriginalFilename();

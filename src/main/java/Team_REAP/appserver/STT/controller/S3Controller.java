@@ -1,6 +1,6 @@
-package Team_REAP.appserver.BH_file;
+package Team_REAP.appserver.STT.controller;
 
-import Team_REAP.appserver.BH_file.Service.S3Service;
+import Team_REAP.appserver.STT.service.S3Service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

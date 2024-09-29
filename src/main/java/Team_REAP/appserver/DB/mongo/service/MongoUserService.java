@@ -1,4 +1,4 @@
-package Team_REAP.appserver.BH_file.Service;
+package Team_REAP.appserver.DB.mongo.service;
 
 import Team_REAP.appserver.common.user.Entity.Record;
 import Team_REAP.appserver.common.user.Entity.User;
@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-public class UserService {
+public class MongoUserService {
     private final MongoTemplate mongoTemplate;
 
     public String create(String name, String date,String time,String text) { // 곧 안 쓸 예정

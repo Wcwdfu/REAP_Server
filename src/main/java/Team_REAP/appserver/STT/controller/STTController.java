@@ -1,7 +1,7 @@
-package Team_REAP.appserver.BH_file;
+package Team_REAP.appserver.STT.controller;
 
-import Team_REAP.appserver.BH_file.Service.STTService;
-import Team_REAP.appserver.BH_file.Service.UserService;
+import Team_REAP.appserver.STT.service.STTService;
+import Team_REAP.appserver.DB.mongo.service.MongoUserService;
 import Team_REAP.appserver.common.user.Entity.Record;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class STTController {
 
     private final STTService sttService;
 
-    private final UserService userService;
+    private final MongoUserService mongoUserService;
 
 
     @Operation(summary = "음성 -> S3저장, 스크립트 변환 후 DB 저장")
@@ -43,7 +43,7 @@ public class STTController {
 
         // TODO : userid 등등의 뭔가를 가져와서 mongodb 객체 id를 찾을 수 있도록 해야함
 
-        Record record = userService.findById(id, Record.class, "record");
+        Record record = mongoUserService.findById(id, Record.class, "record");
 
         return ResponseEntity.status(HttpStatus.OK).body(record);
     }

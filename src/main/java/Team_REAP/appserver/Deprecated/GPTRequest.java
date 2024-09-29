@@ -1,4 +1,4 @@
-package Team_REAP.appserver.BH_file.gpt;
+package Team_REAP.appserver.Deprecated;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
