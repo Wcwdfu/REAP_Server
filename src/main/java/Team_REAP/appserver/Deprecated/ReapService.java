@@ -1,7 +1,6 @@
 package Team_REAP.appserver.Deprecated;
 
 import Team_REAP.appserver.DB.mongo.service.MongoUserService;
-import Team_REAP.appserver.common.user.Entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

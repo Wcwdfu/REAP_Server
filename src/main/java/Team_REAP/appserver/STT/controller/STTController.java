@@ -2,7 +2,7 @@ package Team_REAP.appserver.STT.controller;
 
 import Team_REAP.appserver.STT.service.STTService;
 import Team_REAP.appserver.DB.mongo.service.MongoUserService;
-import Team_REAP.appserver.common.user.Entity.Record;
+import Team_REAP.appserver.DB.mongo.Entity.Record;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

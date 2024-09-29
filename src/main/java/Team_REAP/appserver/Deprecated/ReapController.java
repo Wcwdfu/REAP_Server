@@ -1,7 +1,6 @@
 package Team_REAP.appserver.Deprecated;
 
 
-import Team_REAP.appserver.common.user.Entity.User;
 import Team_REAP.appserver.RAG.MongoScriptRepository;
 import Team_REAP.appserver.DB.mongo.service.MongoUserService;
 import lombok.RequiredArgsConstructor;

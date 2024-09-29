@@ -1,7 +1,7 @@
 package Team_REAP.appserver.DB.mongo.service;
 
-import Team_REAP.appserver.common.user.Entity.Record;
-import Team_REAP.appserver.common.user.Entity.User;
+import Team_REAP.appserver.DB.mongo.Entity.Record;
+import Team_REAP.appserver.Deprecated.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.MongoTemplate;

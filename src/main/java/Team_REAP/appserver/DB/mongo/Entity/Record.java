@@ -1,4 +1,4 @@
-package Team_REAP.appserver.common.user.Entity;
+package Team_REAP.appserver.DB.mongo.Entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
