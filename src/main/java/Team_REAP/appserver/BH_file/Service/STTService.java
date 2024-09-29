@@ -51,11 +51,12 @@ public class STTService {
         IsoFile isoFile = null;
         try {
 
-            // 임시 파일 생성
+            // 임시 파일 복제해서 생성
             tempFile = metadataUtils.saveMultipleFileToTmpFile(media);
+            // 네이버 클라우드에 stt 요청
             ResponseEntity<String> responseEntity = requestSttToNaverCloud(tempFile);
 
-
+            // 스크립트 만들기
             //메타 데이터를 통해서 음성 생성 시간 받아오기
             // MP4 파일 메타데이터 읽기
             LocalDateTime creationDateTime = metadataUtils.readCreationTimeFromMp4(tempFile);
