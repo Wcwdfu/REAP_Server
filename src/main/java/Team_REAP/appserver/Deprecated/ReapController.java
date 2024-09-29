@@ -1,7 +1,7 @@
 package Team_REAP.appserver.Deprecated;
 
 
-import Team_REAP.appserver.RAG.MongoScriptRepository;
+import Team_REAP.appserver.DB.mongo.repository.MongoScriptRepository;
 import Team_REAP.appserver.DB.mongo.service.MongoUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package Team_REAP.appserver.RAG;
+package Team_REAP.appserver.DB.mongo.repository;
 
 import Team_REAP.appserver.Deprecated.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
