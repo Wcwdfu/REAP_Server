@@ -3,6 +3,7 @@ package Team_REAP.appserver.BH_file.Service;
 import Team_REAP.appserver.common.user.Entity.Record;
 import Team_REAP.appserver.common.user.Entity.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -14,6 +15,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class UserService {
     private final MongoTemplate mongoTemplate;
 
@@ -39,18 +41,15 @@ public class UserService {
         return mongoTemplate.insert(record, "record").getId();
     }
 
-    public User read(String id) {
+    public <T> T findById(String id, Class<T> clazz, String collectionName) {
         Query query = new Query(Criteria.where("_id").is(id));
 
-        User findUser = mongoTemplate.findOne(query, User.class, "users");
-        if (findUser == null) {
-            System.out.println("No user found with id: " + id);
+        T result = mongoTemplate.findOne(query, clazz, collectionName);
+        if (result == null) {
+            log.info("No result found with id: " + id);
         }
 
-        System.out.println("findUser = " + findUser.getName());
-        System.out.println("findUser = " + findUser.getId());
-
-        return findUser;
+        return result;
 
         //return mongoTemplate.findOne(query, User.class, "members");
     }

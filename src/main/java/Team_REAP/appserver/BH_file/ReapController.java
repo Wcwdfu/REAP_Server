@@ -34,12 +34,6 @@ public class ReapController { // gpt한테 뭔가를 물어보면 대답해주�
         return userService.create(name, date, time, text);
     }
 
-    @GetMapping("")
-    public User read(String id) {
-
-        return userService.read(id);
-    }
-
     @GetMapping("/{name}/{date}") // 이름으로 사용자 읽기
     public String readByNameAndDate(@PathVariable String name, @PathVariable String date, @RequestParam("prompt") String prompt) {
 
