@@ -1,7 +1,7 @@
-package Team_REAP.appserver.BH_file.Service;
+package Team_REAP.appserver.DB.mongo.service;
 
-import Team_REAP.appserver.common.user.Entity.Record;
-import Team_REAP.appserver.common.user.Entity.User;
+import Team_REAP.appserver.DB.mongo.Entity.Script;
+import Team_REAP.appserver.Deprecated.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-public class UserService {
+public class MongoUserService {
     private final MongoTemplate mongoTemplate;
 
     public String create(String name, String date,String time,String text) { // 곧 안 쓸 예정
@@ -32,13 +32,13 @@ public class UserService {
 
     public String createAll(String recordId, String date, String text) { // 녹음 파일 스크립트로 만든 것 저장
 
-        Record record = Record.builder()
+        Script script = Script.builder()
                 .recordId(recordId)
                 .date(date)
                 .text(text)
                 .build();
 
-        return mongoTemplate.insert(record, "record").getId();
+        return mongoTemplate.insert(script, "record").getId();
     }
 
     public <T> T findById(String id, Class<T> clazz, String collectionName) {

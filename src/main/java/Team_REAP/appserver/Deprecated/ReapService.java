@@ -1,8 +1,6 @@
-package Team_REAP.appserver.BH_file.Service;
+package Team_REAP.appserver.Deprecated;
 
-import Team_REAP.appserver.common.user.Entity.User;
-import Team_REAP.appserver.BH_file.gpt.GPTRequest;
-import Team_REAP.appserver.BH_file.gpt.GPTResponse;
+import Team_REAP.appserver.DB.mongo.service.MongoUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -13,7 +11,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class ReapService {
-    private final UserService userService;
+    private final MongoUserService mongoUserService;
     @Value("${gpt.model}")
     private String model;
 
@@ -39,7 +37,7 @@ public class ReapService {
         System.out.println(refinedDate);
 
         // 유저 데이터 찾아서 gpt에 넣기
-        List<User> userDatas = userService.readByNameAndDate(name, refinedDate);
+        List<User> userDatas = mongoUserService.readByNameAndDate(name, refinedDate);
         StringBuilder timelog = new StringBuilder();
         for (User data : userDatas) {
             timelog.append(data.getDate()).append(" ");

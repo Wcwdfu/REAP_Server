@@ -37,22 +37,4 @@ out/
 .vscode/
 
 ### application.properties ###
-/src/main/resources/application.properties
-
-### GPT ###
-src/main/resources/application-gpt.properties
-
-### STT ###
-src/main/resources/application-stt.properties
-
-### DB ###
-src/main/resources/application-db.properties
-
-### AWS ###
-src/main/resources/application-aws.properties
-
-### oauth2 ###
-src/main/resources/application-oauth2.properties
-
-application.properties
-application.yml
+*.properties

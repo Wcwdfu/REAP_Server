@@ -1,4 +1,4 @@
-package Team_REAP.appserver.BH_file.Service.dto;
+package Team_REAP.appserver.STT.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

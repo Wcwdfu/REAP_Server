@@ -1,4 +1,4 @@
-package Team_REAP.appserver.common.user.Entity;
+package Team_REAP.appserver.Deprecated;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

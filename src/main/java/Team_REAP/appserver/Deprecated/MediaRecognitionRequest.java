@@ -1,4 +1,4 @@
-package Team_REAP.appserver.BH_file.gpt;
+package Team_REAP.appserver.Deprecated;
 
 import lombok.Getter;
 import lombok.Setter;
