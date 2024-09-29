@@ -13,7 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "members")
-public class Record {
+public class Script {
     @Id
     private String id;
     private String recordId; // 녹음 파일 번호

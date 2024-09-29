@@ -1,7 +1,7 @@
 package Team_REAP.appserver.Deprecated;
 
 
-import Team_REAP.appserver.DB.mongo.repository.MongoScriptRepository;
+import Team_REAP.appserver.DB.mongo.repository.ScriptRepository;
 import Team_REAP.appserver.DB.mongo.service.MongoUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class ReapController { // gpt한테 뭔가를 물어보면 대답해주�
     private String date;
 
     @Autowired
-    private MongoScriptRepository mongoScriptRepository;
+    private ScriptRepository scriptRepository;
 
     @PostMapping("/{name}/{date}/{time}/{text}")
     public String create(@PathVariable String name, @PathVariable String date, @PathVariable String time, @PathVariable String text) {

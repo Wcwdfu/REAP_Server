@@ -2,7 +2,7 @@ package Team_REAP.appserver.STT.controller;
 
 import Team_REAP.appserver.STT.service.STTService;
 import Team_REAP.appserver.DB.mongo.service.MongoUserService;
-import Team_REAP.appserver.DB.mongo.Entity.Record;
+import Team_REAP.appserver.DB.mongo.Entity.Script;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,9 +43,9 @@ public class STTController {
 
         // TODO : userid 등등의 뭔가를 가져와서 mongodb 객체 id를 찾을 수 있도록 해야함
 
-        Record record = mongoUserService.findById(id, Record.class, "record");
+        Script script = mongoUserService.findById(id, Script.class, "record");
 
-        return ResponseEntity.status(HttpStatus.OK).body(record);
+        return ResponseEntity.status(HttpStatus.OK).body(script);
     }
 
 

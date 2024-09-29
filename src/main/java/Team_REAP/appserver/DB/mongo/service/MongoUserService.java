@@ -1,6 +1,6 @@
 package Team_REAP.appserver.DB.mongo.service;
 
-import Team_REAP.appserver.DB.mongo.Entity.Record;
+import Team_REAP.appserver.DB.mongo.Entity.Script;
 import Team_REAP.appserver.Deprecated.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,13 +32,13 @@ public class MongoUserService {
 
     public String createAll(String recordId, String date, String text) { // 녹음 파일 스크립트로 만든 것 저장
 
-        Record record = Record.builder()
+        Script script = Script.builder()
                 .recordId(recordId)
                 .date(date)
                 .text(text)
                 .build();
 
-        return mongoTemplate.insert(record, "record").getId();
+        return mongoTemplate.insert(script, "record").getId();
     }
 
     public <T> T findById(String id, Class<T> clazz, String collectionName) {
