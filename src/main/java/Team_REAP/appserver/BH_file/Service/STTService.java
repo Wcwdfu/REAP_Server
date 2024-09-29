@@ -1,5 +1,6 @@
 package Team_REAP.appserver.BH_file.Service;
 
+import Team_REAP.appserver.BH_file.Service.dto.AudioUploadDTO;
 import Team_REAP.appserver.BH_file.util.HashUtils;
 import Team_REAP.appserver.BH_file.util.MetadataUtils;
 
@@ -44,7 +45,7 @@ public class STTService {
 
     private final S3Service s3Service;
 
-    public ResponseEntity<String> audioToText(MultipartFile media, String userName) throws IOException {
+    public ResponseEntity<Object> audioToText(MultipartFile media, String userName) throws IOException {
 
         File tempFile = null;
         IsoFile isoFile = null;
@@ -72,13 +73,15 @@ public class STTService {
 
             // S3에 파일 저장
             String fileName = media.getOriginalFilename();
-            String audioUrl = s3Service.upload(tempFile, fileName, userName, creationDateKST); // ?
+            String audioS3Url = s3Service.upload(tempFile, fileName, userName, creationDateKST); // ?
 
 
             // 전체 녹음 스크립트
             log.info("{}", script);
 
-            return ResponseEntity.status(HttpStatus.OK).body(objectId);
+            AudioUploadDTO audioUploadDTO = new AudioUploadDTO(audioS3Url);
+
+            return ResponseEntity.status(HttpStatus.OK).body(audioUploadDTO);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred: " + e.getMessage());
