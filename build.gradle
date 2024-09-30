@@ -60,7 +60,7 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 
 	// open api
-	implementation 'io.spring.ai:spring-ai-openai:1.0.0'
+	//implementation 'io.spring.ai:spring-ai-openai:1.0.0'
 	//java utility library
 	implementation 'com.google.guava:guava:31.0.1-jre'
 	//deep java library

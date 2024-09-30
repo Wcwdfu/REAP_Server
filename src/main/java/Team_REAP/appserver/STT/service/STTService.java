@@ -3,6 +3,8 @@ package Team_REAP.appserver.STT.service;
 import Team_REAP.appserver.DB.mongo.service.MongoUserService;
 import Team_REAP.appserver.STT.dto.AudioUploadDTO;
 import Team_REAP.appserver.Deprecated.HashUtils;
+import Team_REAP.appserver.STT.dto.InvalidFileFormatErrorDTO;
+import Team_REAP.appserver.STT.exception.InvalidFileFormatException;
 import Team_REAP.appserver.STT.util.MetadataUtils;
 
 
@@ -26,9 +28,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -48,9 +48,24 @@ public class STTService {
 
     public ResponseEntity<Object> audioToText(MultipartFile media, String userName) throws IOException {
 
+
         File tempFile = null;
         IsoFile isoFile = null;
         try {
+
+            // TODO : 중복 코드 있어서 없애야 함
+            // 허용하는 음성 파일 확장자 리스트
+            List<String> allowedExtensions = Arrays.asList("wav", "m4a");
+
+            // 파일 이름에서 확장자 추출
+            String mediaFileName = Objects.requireNonNull(media.getOriginalFilename());
+            String fileExtension = mediaFileName.substring(mediaFileName.lastIndexOf(".") + 1).toLowerCase();
+
+            // 확장자가 허용되지 않는 경우 오류 메시지 반환
+            if (!allowedExtensions.contains(fileExtension)) {
+                log.info("fileExtension = {}", fileExtension);
+                throw new InvalidFileFormatException("invalid file type - please upload audio file(.m4a, .wav)");
+            }
 
             // 임시 파일 복제해서 생성
             tempFile = metadataUtils.saveMultipleFileToTmpFile(media);
@@ -70,13 +85,16 @@ public class STTService {
 
             // 대화 스크립트 제작 ( ReponseEntity<String>, LocalDateTime);
             String script = makeScript(responseEntity, creationDateTimeKST);
+
             String recordId = HashUtils.generateFileHash(tempFile);
-            String objectId = mongoUserService.createAll(recordId, creationDateKST, script); // ?
+            String fileName = media.getOriginalFilename();
+            String uploadedDate = LocalDate.now().toString();
+            String uploadedTime = LocalTime.now().toString();
+
+            String objectId = mongoUserService.createAll(recordId, userName, fileName, creationDateKST, uploadedDate, uploadedTime, script); // ?
 
             // S3에 파일 저장
-            String fileName = media.getOriginalFilename();
             String audioS3Url = s3Service.upload(tempFile, fileName, userName, creationDateKST); // ?
-
 
             // 전체 녹음 스크립트
             log.info("{}", script);
@@ -87,8 +105,10 @@ public class STTService {
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred: " + e.getMessage());
+        }catch(InvalidFileFormatException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new InvalidFileFormatErrorDTO(e.getMessage()));
         } finally {
-            log.info(tempFile.getAbsolutePath());
+            //log.info(tempFile.getAbsolutePath());
             // isofile 닫는건 늘 false
             // IsoFile을 사용한 후 닫아줌, 사용 중이면 파일이 삭제가 안 된다.
             if (tempFile != null && tempFile.exists()) {

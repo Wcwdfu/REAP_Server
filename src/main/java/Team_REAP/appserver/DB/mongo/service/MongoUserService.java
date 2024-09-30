@@ -4,6 +4,7 @@ import Team_REAP.appserver.DB.mongo.Entity.Script;
 import Team_REAP.appserver.Deprecated.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -30,15 +31,41 @@ public class MongoUserService {
         return mongoTemplate.insert(user, "user").getId();
     }
 
-    public String createAll(String recordId, String date, String text) { // 녹음 파일 스크립트로 만든 것 저장
+    public String createAll(String recordId,
+                            String userId,
+                            String recordName,
+                            String recordedDate,
+                            String uploadedDate,
+                            String uploadedTime,
+                            String text) { // 녹음 파일 스크립트로 만든 것 저장
 
         Script script = Script.builder()
                 .recordId(recordId)
-                .date(date)
+                .userId(userId)
+                .recordName(recordName)
+                .recordedDate(recordedDate)
+                .uploadedDate(uploadedDate)
+                .uploadedTime(uploadedTime)
                 .text(text)
                 .build();
 
         return mongoTemplate.insert(script, "record").getId();
+    }
+
+
+    /**
+     * userId에 맞는 객체 중 최근 4개의 데이터를 가져오는 메서드
+     */
+    public List<Script> findRecentScriptsByUserId(String userId) {
+        Query query = new Query(Criteria.where("userId").is(userId))
+                .with(Sort.by(Sort.Direction.DESC, "uploadedDate", "uploadedTime")) // uploadedDate와 uploadedTime 기준으로 내림차순 정렬
+                .limit(4); // 최근 4개만 가져오기
+
+        List<Script> scripts = mongoTemplate.find(query, Script.class, "record");
+        if (scripts.isEmpty()) {
+            log.info("No scripts found for userId: {}", userId);
+        }
+        return scripts;
     }
 
     public <T> T findById(String id, Class<T> clazz, String collectionName) {

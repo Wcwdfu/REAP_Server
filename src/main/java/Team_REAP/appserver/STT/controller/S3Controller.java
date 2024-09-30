@@ -1,5 +1,8 @@
 package Team_REAP.appserver.STT.controller;
 
+import Team_REAP.appserver.DB.mongo.Entity.Script;
+import Team_REAP.appserver.DB.mongo.service.MongoUserService;
+import Team_REAP.appserver.STT.dto.RecentScriptDTO;
 import Team_REAP.appserver.STT.service.S3Service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Slf4j
@@ -18,6 +23,9 @@ import java.io.IOException;
 public class S3Controller {
     @Autowired
     private S3Service s3Service;
+
+    @Autowired
+    private MongoUserService mongoUserService;
 
     //s3에 잘 들어가나 테스트해볼려고 만든것
     @PostMapping(path = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -52,5 +60,21 @@ public class S3Controller {
         s3Service.deleteFile(userName, date, fileName);
 
         return ResponseEntity.ok("success audio delete");
+    }
+
+    @GetMapping("/api/detail/{userid}/record-script")
+    public ResponseEntity<Object> showRecentRecordList(@PathVariable("userid") String userid){
+
+        log.info("userid = {}", userid);
+
+        List<Script> recentScripts = mongoUserService.findRecentScriptsByUserId(userid);
+        List<RecentScriptDTO> recentScriptDTOS = new ArrayList<>();
+
+        for (Script recentScript : recentScripts) {
+            RecentScriptDTO recentScriptDTO = new RecentScriptDTO(recentScript.getRecordName(), recentScript.getUploadedDate(), recentScript.getUploadedTime());
+            recentScriptDTOS.add(recentScriptDTO);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(recentScriptDTOS);
     }
 }
