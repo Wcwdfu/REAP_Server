@@ -58,8 +58,7 @@ public class MongoUserService {
      */
     public List<Script> findRecentScriptsByUserId(String userId) {
         Query query = new Query(Criteria.where("userId").is(userId))
-                .with(Sort.by(Sort.Direction.DESC, "uploadedDate", "uploadedTime")) // uploadedDate와 uploadedTime 기준으로 내림차순 정렬
-                .limit(4); // 최근 4개만 가져오기
+                .with(Sort.by(Sort.Direction.DESC, "uploadedDate", "uploadedTime")); // uploadedDate와 uploadedTime 기준으로 내림차순 정렬
 
         List<Script> scripts = mongoTemplate.find(query, Script.class, "record");
         if (scripts.isEmpty()) {

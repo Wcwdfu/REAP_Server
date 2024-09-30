@@ -71,7 +71,7 @@ public class S3Controller {
         List<RecentScriptDTO> recentScriptDTOS = new ArrayList<>();
 
         for (Script recentScript : recentScripts) {
-            RecentScriptDTO recentScriptDTO = new RecentScriptDTO(recentScript.getRecordName(), recentScript.getUploadedDate(), recentScript.getUploadedTime());
+            RecentScriptDTO recentScriptDTO = new RecentScriptDTO(recentScript.getRecordName(),recentScript.getRecordedDate() ,recentScript.getUploadedDate(), recentScript.getUploadedTime());
             recentScriptDTOS.add(recentScriptDTO);
         }
 
