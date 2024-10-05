@@ -46,7 +46,7 @@ public class STTService {
 
     private final S3Service s3Service;
 
-    public ResponseEntity<Object> audioToText(MultipartFile media, String userName) throws IOException {
+    public ResponseEntity<Object> audioToText(MultipartFile media, String userName, String topic) throws IOException {
 
 
         File tempFile = null;
@@ -91,7 +91,7 @@ public class STTService {
             String uploadedDate = LocalDate.now().toString();
             String uploadedTime = LocalTime.now().toString();
 
-            String objectId = mongoUserService.createAll(recordId, userName, fileName, creationDateKST, uploadedDate, uploadedTime, script); // ?
+            String objectId = mongoUserService.createAll(recordId, userName, fileName, creationDateKST, uploadedDate, uploadedTime, topic, script); // ?
 
             // S3에 파일 저장
             String audioS3Url = s3Service.upload(tempFile, fileName, userName, creationDateKST); // ?

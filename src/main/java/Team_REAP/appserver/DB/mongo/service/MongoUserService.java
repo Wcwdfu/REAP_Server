@@ -37,6 +37,7 @@ public class MongoUserService {
                             String recordedDate,
                             String uploadedDate,
                             String uploadedTime,
+                            String topic,
                             String text) { // 녹음 파일 스크립트로 만든 것 저장
 
         Script script = Script.builder()
@@ -46,6 +47,7 @@ public class MongoUserService {
                 .recordedDate(recordedDate)
                 .uploadedDate(uploadedDate)
                 .uploadedTime(uploadedTime)
+                .topic(topic)
                 .text(text)
                 .build();
 
@@ -54,7 +56,7 @@ public class MongoUserService {
 
 
     /**
-     * userId에 맞는 객체 중 최근 4개의 데이터를 가져오는 메서드
+     * userId에 맞는 객체 중 전체 데이터를 가져오는 메서드
      */
     public List<Script> findRecentScriptsByUserId(String userId) {
         Query query = new Query(Criteria.where("userId").is(userId))
@@ -78,6 +80,22 @@ public class MongoUserService {
         return result;
 
         //return mongoTemplate.findOne(query, User.class, "members");
+    }
+
+    /**
+     * userId와 recordedDate에 맞는 객체 중 전체 데이터를 가져오는 메서드
+     */
+    public List<Script> findScriptsByUserIdAndRecordedDate(String userId, String recordedDate) {
+        // Query 생성: userId와 recordedDate 조건 추가, uploadedDate와 uploadedTime 내림차순 정렬
+        Query query = new Query(Criteria.where("userId").is(userId)
+                .and("recordedDate").is(recordedDate))
+                .with(Sort.by(Sort.Direction.DESC, "uploadedDate", "uploadedTime")); // uploadedDate와 uploadedTime 기준으로 내림차순 정렬
+
+        List<Script> scripts = mongoTemplate.find(query, Script.class, "record");
+        if (scripts.isEmpty()) {
+            log.info("No scripts found for userId: {} and recordedDate: {}", userId, recordedDate);
+        }
+        return scripts;
     }
 
     public List<User> readByName(@PathVariable String name) {

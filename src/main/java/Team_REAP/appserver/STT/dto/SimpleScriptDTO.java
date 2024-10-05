@@ -5,10 +5,11 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class RecentScriptDTO {
+public class SimpleScriptDTO {
 
     private String fileName;
     private String recordedDate;
     private String uploadedDate;
     private String uploadedTime;
+    private String topic;
 }

@@ -22,5 +22,6 @@ public class Script {
     private String recordedDate; // 녹음한 날짜
     private String uploadedDate; // 업로드된 날짜
     private String uploadedTime; // 업로드된 시간
+    private String topic; // 주제
     private String text; // 변환한 텍스트
 }

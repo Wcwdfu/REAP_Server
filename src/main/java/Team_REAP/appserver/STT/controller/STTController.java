@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -31,9 +32,10 @@ public class STTController {
     @Operation(summary = "음성 -> S3저장, 스크립트 변환 후 DB 저장")
     @PostMapping("/recognize-url")
     public ResponseEntity<Object> recognizeMediaFromURL(@RequestParam("media") MultipartFile media,
-                                                        @RequestParam("user") String userName) throws IOException {
+                                                        @RequestParam("user") String userName,
+                                                        @RequestParam("topic") String topic) throws IOException {
 
-        ResponseEntity<Object> response = sttService.audioToText(media, userName);
+        ResponseEntity<Object> response = sttService.audioToText(media, userName, topic);
         return response;
     }
 
@@ -47,6 +49,7 @@ public class STTController {
 
         return ResponseEntity.status(HttpStatus.OK).body(script);
     }
+
 
 
 }

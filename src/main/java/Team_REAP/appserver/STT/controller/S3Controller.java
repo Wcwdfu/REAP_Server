@@ -2,7 +2,7 @@ package Team_REAP.appserver.STT.controller;
 
 import Team_REAP.appserver.DB.mongo.Entity.Script;
 import Team_REAP.appserver.DB.mongo.service.MongoUserService;
-import Team_REAP.appserver.STT.dto.RecentScriptDTO;
+import Team_REAP.appserver.STT.dto.SimpleScriptDTO;
 import Team_REAP.appserver.STT.service.S3Service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,13 +68,31 @@ public class S3Controller {
         log.info("userid = {}", userid);
 
         List<Script> recentScripts = mongoUserService.findRecentScriptsByUserId(userid);
-        List<RecentScriptDTO> recentScriptDTOS = new ArrayList<>();
+        List<SimpleScriptDTO> simpleScriptDTOS = new ArrayList<>();
 
         for (Script recentScript : recentScripts) {
-            RecentScriptDTO recentScriptDTO = new RecentScriptDTO(recentScript.getRecordName(),recentScript.getRecordedDate() ,recentScript.getUploadedDate(), recentScript.getUploadedTime());
-            recentScriptDTOS.add(recentScriptDTO);
+            SimpleScriptDTO simpleScriptDTO = new SimpleScriptDTO(recentScript.getRecordName(),recentScript.getRecordedDate() ,recentScript.getUploadedDate(), recentScript.getUploadedTime(), recentScript.getTopic());
+            simpleScriptDTOS.add(simpleScriptDTO);
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(recentScriptDTOS);
+        return ResponseEntity.status(HttpStatus.OK).body(simpleScriptDTOS);
+    }
+
+    @GetMapping("/api/detail/{userid}/{recordedDate}/record-script") // 임시로 mongoDb에서 Record를 가져오도록 만들었다.
+    public ResponseEntity<Object> showAudioScript(@PathVariable("userid") String userid,
+                                                  @PathVariable("recordedDate") String recordedDate){
+
+        // TODO : userid 등등의 뭔가를 가져와서 mongodb 객체 id를 찾을 수 있도록 해야함
+
+        List<Script> simpleScripts = mongoUserService.findScriptsByUserIdAndRecordedDate(userid, recordedDate);
+        List<SimpleScriptDTO> simpleScriptDTOS = new ArrayList<>();
+
+        for (Script simpleScript : simpleScripts) {
+            SimpleScriptDTO simpleScriptDTO = new SimpleScriptDTO(simpleScript.getRecordName(),simpleScript.getRecordedDate() ,simpleScript.getUploadedDate(), simpleScript.getUploadedTime(), simpleScript.getTopic());
+            simpleScriptDTOS.add(simpleScriptDTO);
+        }
+
+
+        return ResponseEntity.status(HttpStatus.OK).body(simpleScriptDTOS);
     }
 }
