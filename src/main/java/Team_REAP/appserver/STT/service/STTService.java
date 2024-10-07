@@ -191,28 +191,22 @@ public class STTService {
         log.info(tempFile.getName());
         body.add("media", new FileSystemResource(tempFile));
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("language", "ko-KR");
-        params.put("completion", "sync");
-        params.put("callback", null);
-        params.put("wordAlignment", true);
-        params.put("fullText", true);
-        params.put("resultToObs", false);
-        params.put("noiseFiltering", true);
 
-        log.info("JSON 객체로 변환");
-        // JSON 객체로 변환
-        JSONObject jsonParams = new JSONObject(params);
+        JSONObject jsonParams = new JSONObject()
+                .put("language", "ko-KR")
+                .put("completion", "sync")
+                .put("callback", JSONObject.NULL)
+                .put("wordAlignment", true)
+                .put("fullText", true)
+                .put("resultToObs", false)
+                .put("noiseFiltering", true);
 
         body.add("params", jsonParams.toString());
 
         HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(body, headers);
 
         log.info("RestTemplate 시작");
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, httpEntity, String.class);
-        log.info("RestTemplate exchange 끝");
-        return responseEntity;
+        return new RestTemplate().postForEntity(url, httpEntity, String.class);
     }
 
 
