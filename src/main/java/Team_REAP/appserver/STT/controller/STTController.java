@@ -38,18 +38,4 @@ public class STTController {
         ResponseEntity<Object> response = sttService.audioToText(media, userName, topic);
         return response;
     }
-
-    @GetMapping("/api/detail/{userid}/record-script") // 임시로 mongoDb에서 Record를 가져오도록 만들었다.
-    public ResponseEntity<Object> showAudioScript(@PathVariable String userid,
-                                                  @RequestParam("id") String id){
-
-        // TODO : userid 등등의 뭔가를 가져와서 mongodb 객체 id를 찾을 수 있도록 해야함
-
-        Script script = mongoUserService.findById(id, Script.class, "record");
-
-        return ResponseEntity.status(HttpStatus.OK).body(script);
-    }
-
-
-
 }

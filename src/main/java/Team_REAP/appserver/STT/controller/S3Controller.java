@@ -4,6 +4,7 @@ import Team_REAP.appserver.DB.mongo.Entity.Script;
 import Team_REAP.appserver.DB.mongo.service.MongoUserService;
 import Team_REAP.appserver.STT.dto.SimpleScriptDTO;
 import Team_REAP.appserver.STT.service.S3Service;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,7 +28,7 @@ public class S3Controller {
     @Autowired
     private MongoUserService mongoUserService;
 
-    //s3에 잘 들어가나 테스트해볼려고 만든것
+    @Operation(summary = "S3 업로드 - 테스트")
     @PostMapping(path = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadAudio(@RequestParam("fileName") String fileName,
                                               @RequestPart("audioFile") MultipartFile multipartFile) throws IOException {
@@ -45,6 +46,7 @@ public class S3Controller {
 
     }
 
+    @Operation(summary = "S3 다운로드 - 테스트")
     @GetMapping(path = "/download/{fileName}")
     public ResponseEntity<byte[]> getPetImage(
             @PathVariable String fileName
@@ -52,6 +54,7 @@ public class S3Controller {
         return s3Service.download(fileName);
     }
 
+    @Operation(summary = "음성 데이터 및 정보 삭제 - 지금은 S3만 삭제")
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteAudio(@RequestParam String userName,
                                               @RequestParam String date,
@@ -62,6 +65,8 @@ public class S3Controller {
         return ResponseEntity.ok("success audio delete");
     }
 
+
+    @Operation(summary = "음성 파일의 메타 데이터 제공 - 최근")
     @GetMapping("/api/detail/{userid}/record-script")
     public ResponseEntity<Object> showRecentRecordList(@PathVariable("userid") String userid){
 
@@ -78,6 +83,7 @@ public class S3Controller {
         return ResponseEntity.status(HttpStatus.OK).body(simpleScriptDTOS);
     }
 
+    @Operation(summary = "음성 파일의 메타 데이터 제공 - 특정 날짜")
     @GetMapping("/api/detail/{userid}/{recordedDate}/record-script") // 임시로 mongoDb에서 Record를 가져오도록 만들었다.
     public ResponseEntity<Object> showAudioScript(@PathVariable("userid") String userid,
                                                   @PathVariable("recordedDate") String recordedDate){
