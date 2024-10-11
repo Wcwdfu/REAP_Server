@@ -98,6 +98,22 @@ public class MongoUserService {
         return scripts;
     }
 
+    /**
+     * userId와 recordedDate와 recordName에 맞는 객체 중 전체 데이터를 가져오는 메서드 - 아직 commit 안함
+     */
+    public Script findScriptByUserIdAndRecordedDateAndRecordName(String userId, String recordedDate, String recordName) {
+        // Query 생성: userId와 recordedDate 조건 추가, uploadedDate와 uploadedTime 내림차순 정렬
+        Query query = new Query(Criteria.where("userId").is(userId)
+                .and("recordedDate").is(recordedDate)
+                .and("recordName").is(recordName));
+
+        Script scripts = mongoTemplate.findOne(query, Script.class, "record");
+        if (scripts == null) {
+            log.info("No scripts found for userId: {} and recordedDate: {}", userId, recordedDate);
+        }
+        return scripts;
+    }
+
     public List<User> readByName(@PathVariable String name) {
         // 쿼리 생성: name이 해당 이름인 데이터 검색
         Query query = new Query(Criteria.where("name").is(name));

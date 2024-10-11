@@ -183,10 +183,13 @@ public class STTService {
 
     private ResponseEntity<String> requestSttToNaverCloud(File tempFile) {
         String url = apiUrl + "/recognizer/upload";
+
+        // 헤더 설정
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         headers.add("X-CLOVASPEECH-API-KEY", secretKey);
 
+        // Json으로 요청 생성
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         log.info(tempFile.getName());
         body.add("media", new FileSystemResource(tempFile));

@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class SimpleScriptDTO {
+public class AudioMetadataDTO {
 
     private String fileName;
     private String recordedDate;
