@@ -7,5 +7,6 @@ import lombok.Getter;
 @Getter
 public class AudioUploadDTO {
 
+    private String fileName;
     private String s3Url;
 }

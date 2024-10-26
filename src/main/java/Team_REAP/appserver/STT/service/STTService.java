@@ -99,7 +99,7 @@ public class STTService {
             // 전체 녹음 스크립트
             log.info("{}", script);
 
-            AudioUploadDTO audioUploadDTO = new AudioUploadDTO(audioS3Url);
+            AudioUploadDTO audioUploadDTO = new AudioUploadDTO(fileName, audioS3Url);
 
             return ResponseEntity.status(HttpStatus.OK).body(audioUploadDTO);
         } catch (NoSuchAlgorithmException e) {

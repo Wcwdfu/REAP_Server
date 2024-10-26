@@ -4,8 +4,6 @@
 //import Team_REAP.appserver.common.login.jwt.JwtTokenProvider;
 //import Team_REAP.appserver.common.login.service.OAuth2Service;
 //import lombok.RequiredArgsConstructor;
-//import org.springframework.context.annotation.Bean;
-//import org.springframework.security.authentication.AuthenticationManager;
 //import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 //import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 //import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -22,12 +20,6 @@
 //
 //    @Bean
 //    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        // JWT 필터 추가
-//        http
-//                .csrf().disable() // CSRF 비활성화
-//                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션을 사용하지 않음 (JWT로 상태 관리)
-//                .and()
-//                .authorizeRequests()
 //                .requestMatchers("/api/common/login/**", "/api/common/token/refresh").permitAll() // 로그인 및 토큰 재발급 요청은 인증 없이 접근 가능
 //                .anyRequest().authenticated() // 나머지 요청은 인증 필요
 //                .and()
