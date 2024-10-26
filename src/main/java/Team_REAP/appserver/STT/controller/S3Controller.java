@@ -5,6 +5,7 @@ import Team_REAP.appserver.DB.mongo.service.MongoUserService;
 import Team_REAP.appserver.STT.dto.AudioFullDataDto;
 import Team_REAP.appserver.STT.dto.AudioMetadataDTO;
 import Team_REAP.appserver.STT.service.S3Service;
+import Team_REAP.appserver.common.login.ano.AuthUser;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,8 +69,8 @@ public class S3Controller {
 
 
     @Operation(summary = "음성 파일의 메타 데이터 제공 - 최근", description = "클라이언트로부터 유저 식별 정보를 받으면 해당 유저가 최근에 변환한 음성에 대한 메타데이터를 가져옵니다.")
-    @GetMapping("/api/detail/{userid}/record-script")
-    public ResponseEntity<Object> showRecentRecordList(@PathVariable("userid") String userid){
+    @GetMapping("/api/detail/record-script")
+    public ResponseEntity<Object> showRecentRecordList(@AuthUser String userid){
 
         log.info("userid = {}", userid);
 
@@ -85,8 +86,8 @@ public class S3Controller {
     }
 
     @Operation(summary = "음성 파일의 메타 데이터 제공 - 특정 날짜", description = "클라이언트가 유저 식별 정보 및 원하는 날짜 정보를 주면 해당 날짜에 해당하는 메타데이터들을 가져옵니다.")
-    @GetMapping("/api/detail/{userid}/{recordedDate}/record-script") // 임시로 mongoDb에서 Record를 가져오도록 만들었다.
-    public ResponseEntity<Object> showAudioScript(@PathVariable("userid") String userid,
+    @GetMapping("/api/detail/{recordedDate}/record-script") // 임시로 mongoDb에서 Record를 가져오도록 만들었다.
+    public ResponseEntity<Object> showAudioScript(@AuthUser String userid,
                                                   @PathVariable("recordedDate") String recordedDate){
 
         // TODO : userid 등등의 뭔가를 가져와서 mongodb 객체 id를 찾을 수 있도록 해야함
@@ -104,8 +105,8 @@ public class S3Controller {
     }
 
     @Operation(summary = "음성 파일의 모든 제공 - 특정 날짜", description = "클라이언트가 유저 식별 정보 및 원하는 날짜 정보를 주면 해당 날짜에 해당하는 메타데이터들과 스크립트 정보들을 가져옵니다.")
-    @GetMapping("/api/detail/{userid}/{recordedDate}/total-script") // 임시로 mongoDb에서 Record를 가져오도록 만들었다.
-    public ResponseEntity<Object> showAudioScript(@PathVariable("userid") String userid,
+    @GetMapping("/api/detail/{recordedDate}/total-script") // 임시로 mongoDb에서 Record를 가져오도록 만들었다.
+    public ResponseEntity<Object> showAudioScript(@AuthUser String userid,
                                                   @PathVariable("recordedDate") String recordedDate,
                                                   @RequestParam("recordName") String recordName){
 
