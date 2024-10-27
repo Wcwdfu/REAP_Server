@@ -1,12 +1,13 @@
 package Team_REAP.appserver.STT.service;
 
-import Team_REAP.appserver.DB.mongo.service.MongoUserService;
-import Team_REAP.appserver.STT.dto.AudioUploadDTO;
+import Team_REAP.appserver.DB.mongo.Entity.Script;
+import Team_REAP.appserver.DB.mongo.service.ScriptService;
 import Team_REAP.appserver.Deprecated.HashUtils;
+import Team_REAP.appserver.RAG.RAG.service.ChromaDBService;
+import Team_REAP.appserver.STT.dto.AudioUploadDTO;
 import Team_REAP.appserver.STT.dto.InvalidFileFormatErrorDTO;
 import Team_REAP.appserver.STT.exception.InvalidFileFormatException;
 import Team_REAP.appserver.STT.util.MetadataUtils;
-
 
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -40,20 +41,18 @@ public class STTService {
     @Value("${naver.cloud.secret.key}")
     private String secretKey;
 
-    private final MongoUserService mongoUserService;
-    
-    private final MetadataUtils metadataUtils;
+    private final ScriptService scriptService; // 변경된 필드명
+    private final ChromaDBService chromaDBService; // 추가된 필드
 
+    private final MetadataUtils metadataUtils;
     private final S3Service s3Service;
 
     public ResponseEntity<Object> audioToText(MultipartFile media, String userName, String topic) throws IOException {
-
 
         File tempFile = null;
         IsoFile isoFile = null;
         try {
 
-            // TODO : 중복 코드 있어서 없애야 함
             // 허용하는 음성 파일 확장자 리스트
             List<String> allowedExtensions = Arrays.asList("wav", "m4a");
 
@@ -69,35 +68,49 @@ public class STTService {
 
             // 임시 파일 복제해서 생성
             tempFile = metadataUtils.saveMultipleFileToTmpFile(media);
-            // 네이버 클라우드에 stt 요청
+
+            // 네이버 클라우드에 STT 요청
             ResponseEntity<String> responseEntity = requestSttToNaverCloud(tempFile);
 
-            // 스크립트 만들기
-            //메타 데이터를 통해서 음성 생성 시간 받아오기
-            // MP4 파일 메타데이터 읽기
+            // 메타데이터에서 녹음 시간 받아오기
             LocalDateTime creationDateTime = metadataUtils.readCreationTimeFromMp4(tempFile);
             LocalDateTime creationDateTimeKST = metadataUtils.convertToKST(creationDateTime);
 
-            // 날짜와 시간 부분만 추출
+            // 날짜 부분 추출
             String creationDateKST = metadataUtils.formatDateTime(creationDateTime, "yyyy-MM-dd");
-            //log.info("Creation Date (KST): " + creationDateKST); - 녹음한 날짜
-            //log.info("Creation Time (KST): " + creationTimeKST); - 녹음한 시간
 
-            // 대화 스크립트 제작 ( ReponseEntity<String>, LocalDateTime);
-            String script = makeScript(responseEntity, creationDateTimeKST);
+            // 스크립트 생성
+            String scriptContent = makeScript(responseEntity, creationDateTimeKST);
 
+            // 필요한 정보 생성
             String recordId = HashUtils.generateFileHash(tempFile);
             String fileName = media.getOriginalFilename();
             String uploadedDate = LocalDate.now().toString();
             String uploadedTime = LocalTime.now().toString();
 
-            String objectId = mongoUserService.createAll(recordId, userName, fileName, creationDateKST, uploadedDate, uploadedTime, topic, script); // ?
+            // Script 객체 생성
+            Script script = Script.builder()
+                    .recordId(recordId)
+                    .userId(userName)
+                    .recordName(fileName)
+                    .recordedDate(creationDateKST)
+                    .uploadedDate(uploadedDate)
+                    .uploadedTime(uploadedTime)
+                    .topic(topic)
+                    .text(scriptContent)
+                    .build();
+
+            // MongoDB에 Script 저장
+            scriptService.saveScript(script);
+
+            // ChromaDB에 Script 추가
+            chromaDBService.addScriptToVectorStore(script);
 
             // S3에 파일 저장
-            String audioS3Url = s3Service.upload(tempFile, fileName, userName, creationDateKST); // ?
+            String audioS3Url = s3Service.upload(tempFile, fileName, userName, creationDateKST);
 
             // 전체 녹음 스크립트
-            log.info("{}", script);
+            log.info("{}", scriptContent);
 
             AudioUploadDTO audioUploadDTO = new AudioUploadDTO(fileName, audioS3Url);
 
@@ -105,12 +118,10 @@ public class STTService {
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred: " + e.getMessage());
-        }catch(InvalidFileFormatException e){
+        } catch (InvalidFileFormatException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new InvalidFileFormatErrorDTO(e.getMessage()));
         } finally {
-            //log.info(tempFile.getAbsolutePath());
-            // isofile 닫는건 늘 false
-            // IsoFile을 사용한 후 닫아줌, 사용 중이면 파일이 삭제가 안 된다.
+            // 리소스 정리
             if (tempFile != null && tempFile.exists()) {
                 boolean deleted = tempFile.delete();
                 if (!deleted) {
@@ -132,11 +143,9 @@ public class STTService {
         // 누적 시간을 저장할 변수
         Duration totalDuration = Duration.ZERO;
 
-        //DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
         // 스크립트 만들기
-
         log.info("대화 스크립트 만들기");
         String preSpeakerName = null;
         for (int i = 0; i < segments.length(); i++) {
@@ -150,7 +159,7 @@ public class STTService {
             int durationMillis = end - start;
             totalDuration = totalDuration.plusMillis(durationMillis);
 
-            // start를 LocalDateTime으로 변환
+            // start를 LocalTime으로 변환
             LocalTime startTime = LocalTime.MIDNIGHT.plus(Duration.ofMillis(start));
             String elapseTime = startTime.format(timeFormatter);
 
@@ -159,7 +168,7 @@ public class STTService {
             String adjustedTimeKST = adjustedDateTimeKST.format(timeFormatter);
 
             // recordInfo에 시간 정보와 대화 내용 추가
-            if(!Objects.equals(preSpeakerName, speakerName)){
+            if (!Objects.equals(preSpeakerName, speakerName)) {
                 // 화자가 바뀌었으므로 새 줄을 추가
                 if (i != 0) {
                     recordInfo.append("\n"); // 첫 번째 항목이 아닌 경우 개행 추가
@@ -168,14 +177,11 @@ public class STTService {
                 recordInfo.append(elapseTime).append(" "); // 누적 시간
                 recordInfo.append(speakerName).append(" ");
                 recordInfo.append(text).append(" ");
-            }else{
+            } else {
                 recordInfo.append(text).append(" ");
             }
 
             preSpeakerName = speakerName;
-
-            log.info("userService 이용");
-            // userService.create(speakerName, adjustedDateKST, adjustedTimeKST, text);
         }
 
         return recordInfo.toString();
@@ -189,11 +195,10 @@ public class STTService {
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         headers.add("X-CLOVASPEECH-API-KEY", secretKey);
 
-        // Json으로 요청 생성
+        // 요청 본문 생성
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         log.info(tempFile.getName());
         body.add("media", new FileSystemResource(tempFile));
-
 
         JSONObject jsonParams = new JSONObject()
                 .put("language", "ko-KR")
@@ -211,6 +216,4 @@ public class STTService {
         log.info("RestTemplate 시작");
         return new RestTemplate().postForEntity(url, httpEntity, String.class);
     }
-
-
 }

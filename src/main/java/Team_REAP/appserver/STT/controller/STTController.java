@@ -1,7 +1,7 @@
 package Team_REAP.appserver.STT.controller;
 
+import Team_REAP.appserver.DB.mongo.service.ScriptService;
 import Team_REAP.appserver.STT.service.STTService;
-import Team_REAP.appserver.DB.mongo.service.MongoUserService;
 import Team_REAP.appserver.common.login.ano.AuthUser;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class STTController {
 
     private final STTService sttService;
 
-    private final MongoUserService mongoUserService;
+    private final ScriptService mongoUserService;
 
 
     @Operation(summary = "음성 -> S3저장, 스크립트 변환 후 DB 저장", description = "사용자로부터 음성을 받으면 네이버 STT를 통해서 음성을 텍스트로 변환합니다." +

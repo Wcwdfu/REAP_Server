@@ -1,10 +1,13 @@
 package Team_REAP.appserver.DB.mongo.repository;
 
-import Team_REAP.appserver.Deprecated.User;
+import Team_REAP.appserver.DB.mongo.Entity.Script;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface ScriptRepository extends MongoRepository<User, String> {
+import java.util.List;
 
-    User findByName(String name);
+public interface ScriptRepository extends MongoRepository<Script, String> {
+    List<Script> findByUserIdOrderByUploadedDateDescUploadedTimeDesc(String userId);
+    List<Script> findByUserIdAndRecordedDateOrderByUploadedDateDescUploadedTimeDesc(String userId, String recordedDate);
+    Script findFirstByUserIdAndRecordedDateAndRecordName(String userId, String recordedDate, String recordName);
 }
 

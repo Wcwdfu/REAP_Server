@@ -1,7 +1,7 @@
 package Team_REAP.appserver.STT.controller;
 
 import Team_REAP.appserver.DB.mongo.Entity.Script;
-import Team_REAP.appserver.DB.mongo.service.MongoUserService;
+import Team_REAP.appserver.DB.mongo.service.ScriptService;
 import Team_REAP.appserver.STT.dto.AudioFullDataDto;
 import Team_REAP.appserver.STT.dto.AudioMetadataDTO;
 import Team_REAP.appserver.STT.service.S3Service;
@@ -28,7 +28,7 @@ public class S3Controller {
     private S3Service s3Service;
 
     @Autowired
-    private MongoUserService mongoUserService;
+    private ScriptService mongoUserService;
 
     @Operation(summary = "S3 업로드 - 테스트")
     @PostMapping(path = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

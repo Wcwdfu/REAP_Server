@@ -30,10 +30,12 @@ public class SecurityConfig {
                 .sessionManagement(sessionManagement -> sessionManagement
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 정책을 STATELESS로 설정
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/swagger", "/swagger-ui/**", "/swagger-ui.html", "/api-docs", "/api-docs/**", "/v3/api-docs/**")
-                        .permitAll()
-                        .requestMatchers("/token/refresh", "/token/logout", "/api/oauth/kakao").permitAll() // 인증이 필요없는 경로 설정
-                        .anyRequest().authenticated()); // 그 외 모든 요청은 인증 필요
+                        .requestMatchers("/auth/").authenticated() // /secure 경로 아래의 모든 요청은 인증 필요
+                        .anyRequest().permitAll()); // 그 외 모든 요청은 인증 없이 접근 가능
+//                        .requestMatchers("/swagger", "/swagger-ui/", "/swagger-ui.html", "/api-docs", "/api-docs/", "/v3/api-docs/")
+//                        .permitAll()
+//                        .requestMatchers("/token/refresh", "/token/logout", "/api/oauth/kakao").permitAll() // 인증이 필요없는 경로 설정
+//                        .anyRequest().authenticated()); // 그 외 모든 요청은 인증 필요
 
         log.info("Security Filter Chain 설정 완료");
 
