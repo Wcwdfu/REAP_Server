@@ -2,6 +2,7 @@ package Team_REAP.appserver.STT.controller;
 
 import Team_REAP.appserver.STT.service.STTService;
 import Team_REAP.appserver.DB.mongo.service.MongoUserService;
+import Team_REAP.appserver.common.login.ano.AuthUser;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +33,7 @@ public class STTController {
             "STT 결과를 가지고 스크립트로 만들어 음성 파일은 S3에 저장하고 스크립트 관련 내용은 MongoDb에 저장합니다.")
     @PostMapping("/recognize-url")
     public ResponseEntity<Object> recognizeMediaFromURL(@RequestParam("media") MultipartFile media,
-                                                        @RequestParam("user") String userName,
+                                                        @AuthUser String userName,
                                                         @RequestParam("topic") String topic) throws IOException {
 
         ResponseEntity<Object> response = sttService.audioToText(media, userName, topic);
