@@ -18,29 +18,6 @@ public class ScriptService {
         return scriptRepository.save(script);
     }
 
-    public String createAll(String recordId,
-                            String userId,
-                            String recordName,
-                            String recordedDate,
-                            String uploadedDate,
-                            String uploadedTime,
-                            String topic,
-                            String text) {
-        Script script = Script.builder()
-                .recordId(recordId)
-                .userId(userId)
-                .recordName(recordName)
-                .recordedDate(recordedDate)
-                .uploadedDate(uploadedDate)
-                .uploadedTime(uploadedTime)
-                .topic(topic)
-                .text(text)
-                .build();
-
-        Script savedScript = scriptRepository.save(script);
-        return savedScript.getId();
-    }
-
     public List<Script> findRecentScriptsByUserId(String userId) {
         List<Script> scripts = scriptRepository.findByUserIdOrderByUploadedDateDescUploadedTimeDesc(userId);
         if (scripts.isEmpty()) {
