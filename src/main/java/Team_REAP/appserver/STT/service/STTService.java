@@ -116,7 +116,7 @@ public class STTService {
 
             return ResponseEntity.status(HttpStatus.OK).body(audioUploadDTO);
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            log.info("STTService - {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred: " + e.getMessage());
         } catch (InvalidFileFormatException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new InvalidFileFormatErrorDTO(e.getMessage()));

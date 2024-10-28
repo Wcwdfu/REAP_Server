@@ -1,6 +1,7 @@
 package Team_REAP.appserver.RAG.RAG.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.transformer.splitter.TextSplitter;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
@@ -39,9 +40,7 @@ public class ChromaDBController {
         TextSplitter textSplitter=new TokenTextSplitter();
         for (Document document : documents) {
             List<Document> splitteddocs = textSplitter.split(document);
-            System.out.println("before adding document: " + document.getContent());
             vectorStore.add(splitteddocs);
-            System.out.println("Added document: "+ document.getContent());
         }
         return "Loaded " + resource.getFilename();
     }

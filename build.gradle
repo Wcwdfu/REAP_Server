@@ -37,8 +37,12 @@ dependencies {
 	// MongoDB
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 
-	implementation 'org.apache.httpcomponents:httpclient:4.5.13'
-	implementation 'org.apache.httpcomponents:httpmime:4.5.13'
+	implementation ('org.apache.httpcomponents:httpclient:4.5.13'){
+		exclude group: 'commons-logging', module: 'commons-logging'
+	}
+	implementation ('org.apache.httpcomponents:httpmime:4.5.13'){
+		exclude group: 'commons-logging', module: 'commons-logging'
+	}
 	// 음성 파일 메타 데이터
 	implementation 'org.mp4parser:isoparser:1.9.41'
 
