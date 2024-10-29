@@ -22,7 +22,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/audio")
+@RequestMapping("/auth")
 public class S3Controller {
     @Autowired
     private S3Service s3Service;

@@ -62,26 +62,4 @@ public class AuthController {
         return ResponseEntity.badRequest().body(TokenResponseStatus.addStatus(400, null));
     }
 
-    @GetMapping("test")
-    public ResponseEntity<String> test(@AuthUser String kakaoId){
-        log.info("AuthController : test");
-        log.info("AuthController - kakaoId: {}", kakaoId);
-        return ResponseEntity.status(HttpStatus.OK).body("success");
-    }
-
-    // RefreshToken 저장
-    @PostMapping("/saveToken")
-    public ResponseEntity<TestTokenDto> saveToken(@RequestParam String kakaoId) {
-
-        String accessToken = jwtUtil.generateRefreshToken(kakaoId, "USER");
-        String refreshToken = jwtUtil.generateAccessToken(kakaoId, "USER");
-
-        tokenService.saveTokenInfo(kakaoId, refreshToken, accessToken);
-
-        TestTokenDto testTokenDto = new TestTokenDto(accessToken, refreshToken);
-
-        return ResponseEntity.status(HttpStatus.OK).body(testTokenDto);
-    }
-
-
 }
