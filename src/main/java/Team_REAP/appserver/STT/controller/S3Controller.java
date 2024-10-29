@@ -28,7 +28,7 @@ public class S3Controller {
     private S3Service s3Service;
 
     @Autowired
-    private ScriptService mongoUserService;
+    private ScriptService scriptService;
 
     @Operation(summary = "S3 업로드 - 테스트")
     @PostMapping(path = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -74,7 +74,7 @@ public class S3Controller {
 
         log.info("userid = {}", userid);
 
-        List<Script> recentScripts = mongoUserService.findRecentScriptsByUserId(userid);
+        List<Script> recentScripts = scriptService.findRecentScriptsByUserId(userid);
         List<AudioMetadataDTO> audioMetadataDTOS = new ArrayList<>();
 
         for (Script recentScript : recentScripts) {
@@ -92,7 +92,7 @@ public class S3Controller {
 
         // TODO : userid 등등의 뭔가를 가져와서 mongodb 객체 id를 찾을 수 있도록 해야함
 
-        List<Script> simpleScripts = mongoUserService.findScriptsByUserIdAndRecordedDate(userid, recordedDate);
+        List<Script> simpleScripts = scriptService.findScriptsByUserIdAndRecordedDate(userid, recordedDate);
         List<AudioMetadataDTO> audioMetadataDTOS = new ArrayList<>();
 
         for (Script simpleScript : simpleScripts) {
@@ -112,7 +112,7 @@ public class S3Controller {
 
         // TODO : userid 등등의 뭔가를 가져와서 mongodb 객체 id를 찾을 수 있도록 해야함
 
-        Script script = mongoUserService.findScriptByUserIdAndRecordedDateAndRecordName(userid, recordedDate, recordName);
+        Script script = scriptService.findScriptByUserIdAndRecordedDateAndRecordName(userid, recordedDate, recordName);
 
         AudioFullDataDto audioFullDataDto = new AudioFullDataDto(script.getUserId(), script.getRecordName(),
                                                                 script.getRecordedDate(), script.getUploadedDate(), script.getUploadedTime(),

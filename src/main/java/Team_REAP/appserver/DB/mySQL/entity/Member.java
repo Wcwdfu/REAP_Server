@@ -1,4 +1,4 @@
-package Team_REAP.appserver.common.login.user;
+package Team_REAP.appserver.DB.mySQL.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

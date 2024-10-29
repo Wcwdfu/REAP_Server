@@ -2,8 +2,8 @@ package Team_REAP.appserver.common.login.filter;
 
 import Team_REAP.appserver.common.login.dto.SecurityUserDto;
 import Team_REAP.appserver.common.login.exception.JwtException;
-import Team_REAP.appserver.common.login.user.Member;
-import Team_REAP.appserver.common.login.user.MemberRepository;
+import Team_REAP.appserver.DB.mySQL.entity.Member;
+import Team_REAP.appserver.DB.mySQL.repository.MemberRepository;
 import Team_REAP.appserver.common.login.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

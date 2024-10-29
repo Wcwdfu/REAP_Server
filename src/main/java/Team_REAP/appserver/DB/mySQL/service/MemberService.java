@@ -1,5 +1,7 @@
-package Team_REAP.appserver.common.login.user;
+package Team_REAP.appserver.DB.mySQL.service;
 
+import Team_REAP.appserver.DB.mySQL.entity.Member;
+import Team_REAP.appserver.DB.mySQL.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

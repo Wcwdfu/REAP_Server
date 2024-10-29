@@ -2,8 +2,8 @@ package Team_REAP.appserver.common.login.controller;
 
 import Team_REAP.appserver.common.login.dto.LoginResponse;
 import Team_REAP.appserver.common.login.service.RefreshTokenService;
-import Team_REAP.appserver.common.login.user.Member;
-import Team_REAP.appserver.common.login.user.MemberRepository;
+import Team_REAP.appserver.DB.mySQL.entity.Member;
+import Team_REAP.appserver.DB.mySQL.repository.MemberRepository;
 import Team_REAP.appserver.common.login.util.JwtUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
