@@ -1,10 +1,9 @@
 package Team_REAP.appserver.common.login.service;
 
+import Team_REAP.appserver.DB.mySQL.entity.Member;
 import Team_REAP.appserver.common.login.exception.KakaoApiException;
-import Team_REAP.appserver.common.login.user.Member;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;

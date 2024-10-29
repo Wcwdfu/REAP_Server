@@ -3,6 +3,9 @@ package Team_REAP.appserver.STT.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.List;
+import java.util.Map;
+
 @AllArgsConstructor
 @Getter
 public class AudioFullDataDto {
@@ -13,7 +16,7 @@ public class AudioFullDataDto {
     private String uploadedDate; // 업로드된 날짜
     private String uploadedTime; // 업로드된 시간
     private String topic; // 주제
-    private String text; // 변환한 텍스트
+    private List<Map<String, String>> text; // JSON 형태로 각 발화 데이터를 담기 위한 리스트
 
 
 }

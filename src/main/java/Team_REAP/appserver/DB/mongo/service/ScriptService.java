@@ -2,12 +2,14 @@ package Team_REAP.appserver.DB.mongo.service;
 
 import Team_REAP.appserver.DB.mongo.Entity.Script;
 import Team_REAP.appserver.DB.mongo.repository.ScriptRepository;
+import Team_REAP.appserver.STT.dto.AudioFullDataDto;
+import Team_REAP.appserver.STT.dto.ScriptTextDataDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -42,6 +44,26 @@ public class ScriptService {
         }
         return script;
     }
+
+    public List<ScriptTextDataDTO> getFormattedAudioData(String userid, String recordedDate, String recordName) {
+        Script script = findScriptByUserIdAndRecordedDateAndRecordName(userid, recordedDate, recordName);
+
+        List<ScriptTextDataDTO> formattedScripts = Arrays.stream(script.getText().split("\n"))
+                .map(line -> {
+                    String[] parts = line.trim().split(" ", 4); // [timestamp, elapsedTime, speaker, text]
+                    return new ScriptTextDataDTO(
+                            parts.length > 0 ? parts[0] : "",    // timestamp
+                            parts.length > 1 ? parts[1] : "",    // elapsedTime
+                            parts.length > 2 ? parts[2] : "",    // speaker
+                            parts.length > 3 ? parts[3] : ""     // text
+                    );
+                })
+                .collect(Collectors.toList());
+
+        return formattedScripts;
+    }
+
+
 
     //연동 확인을 위한 코드
 
