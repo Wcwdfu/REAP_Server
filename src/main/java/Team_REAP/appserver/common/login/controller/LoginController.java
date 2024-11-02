@@ -58,7 +58,7 @@ public class LoginController {
         // 3. JWT 생성
         String customAccessToken = jwtUtil.generateAccessToken(member.getKakaoId(), member.getUserRole());
         String customRefreshToken = jwtUtil.generateRefreshToken(member.getKakaoId(), member.getUserRole());
-        tokenService.saveTokenInfo(member.getKakaoId(), customAccessToken, customRefreshToken);
+        tokenService.saveTokenInfo(member.getKakaoId(), customRefreshToken, customAccessToken);
 
         LoginResponse loginResponse = new LoginResponse(true, customAccessToken);
 

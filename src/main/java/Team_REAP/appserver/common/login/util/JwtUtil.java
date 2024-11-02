@@ -47,7 +47,7 @@ public class JwtUtil {
     public String generateRefreshToken(String id, String role) {
         log.info("JwtUtil - generateRefreshToken");
         // 토큰의 유효 기간을 밀리초 단위로 설정.
-        long refreshPeriod = 1000L * 60L * 60L * 24L * 28; // 4주
+        long refreshPeriod = 1000L * 60L * 60L * 24L * 14; // 2주
 
 
         // 현재 시간과 날짜를 가져온다.
