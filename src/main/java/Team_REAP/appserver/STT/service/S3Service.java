@@ -97,15 +97,26 @@ public class S3Service {
         return new ResponseEntity<>(bytes, httpHeaders, HttpStatus.OK);
     }
 
-    public void deleteFile(String userName, String date, String fileName){
+    public void deleteFile(String userId, String date, String fileName){
         try {
-            String path = userName + "/" + date + "/" + fileName;
+            String path = userId + "/" + date + "/" + fileName;
             // S3 클라이언트를 사용하여 파일 삭제
             amazonS3.deleteObject(new DeleteObjectRequest(bucket, path));
             log.info("S3Service - 파일이 성공적으로 삭제되었습니다: {}", fileName);
         } catch (Exception e) {
             log.info("S3Service - 파일 삭제 중 오류가 발생했습니다: {}", e.getMessage());
         }
+    }
+
+    public void moveFile(String userId, String recordedDate, String oldRecordName, String newRecordName) {
+        String oldPath = userId + "/" + recordedDate + "/" + oldRecordName;
+        String newPath = userId + "/" + recordedDate + "/" + newRecordName; // 확장자 모름
+
+        log.info("S3Service - oldPath: {}", oldPath);
+
+        // 파일 복사 후 삭제
+        amazonS3.copyObject(bucket, oldPath, bucket, newPath);
+        amazonS3.deleteObject(bucket, oldPath);
     }
 
 }

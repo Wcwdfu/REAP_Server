@@ -89,7 +89,7 @@ public class AudioService {
             // S3 업로드
             String audioS3Url = s3Service.upload(tempFile, fileName, userName, creationDateKST);
 
-            return new AudioUploadDTO(fileName, audioS3Url);
+            return new AudioUploadDTO(fileName, audioS3Url, recordId);
         } finally {
             // 임시 파일 삭제
 //            if (tempFile.exists() && !tempFile.delete()) {

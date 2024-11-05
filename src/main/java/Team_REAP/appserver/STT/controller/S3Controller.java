@@ -57,15 +57,20 @@ public class S3Controller {
         return s3Service.download(fileName);
     }
 
-    @Operation(summary = "음성 데이터 및 정보 삭제 - 지금은 S3만 삭제")
-    @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteAudio(@RequestParam String userName,
-                                              @RequestParam String date,
-                                              @RequestParam String fileName){
+    @Operation(summary = "음성 데이터 및 정보 삭제",
+            description = "클라이언트가 음성 데이터 및 정보에 대한 삭제 요청을 보내면, S3와 몽고DB에 있는 데이터를 삭제시킵니다.")
+    @DeleteMapping("/api/detail/script/{date}/delete")
+    public ResponseEntity<String> deleteAudio(@AuthUser String userId,
+                                              @PathVariable String date,
+                                              @RequestParam String fileName,
+                                              @RequestParam String recordId){
 
-        s3Service.deleteFile(userName, date, fileName);
+        // MongoDB에서 정보 삭제
+        scriptService.deleteScript(userId, recordId);
+        // S3에서 삭제
+        s3Service.deleteFile(userId, date, fileName);
 
-        return ResponseEntity.ok("success audio delete");
+        return ResponseEntity.status(HttpStatus.OK).body("success audio delete");
     }
 
 

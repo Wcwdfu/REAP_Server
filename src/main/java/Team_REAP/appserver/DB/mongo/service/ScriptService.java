@@ -4,6 +4,7 @@ import Team_REAP.appserver.DB.mongo.Entity.Script;
 import Team_REAP.appserver.DB.mongo.repository.ScriptRepository;
 import Team_REAP.appserver.STT.dto.AudioFullDataDto;
 import Team_REAP.appserver.STT.dto.ScriptTextDataDTO;
+import Team_REAP.appserver.STT.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ScriptService {
     private final ScriptRepository scriptRepository;
+    private final S3Service s3Service;
 
     public Script saveScript(Script script) {
         return scriptRepository.save(script);
@@ -77,7 +79,36 @@ public class ScriptService {
         return scriptRepository.findById(id);
     }
     // Delete
-    public void deleteScript(String id) {
-        scriptRepository.deleteById(id);
+//    public void deleteScript(String id) {
+//        scriptRepository.deleteById(id);
+//    }
+
+    public Script updateRecordNameAndTopic(String userId, String scriptId, String newRecordName, String newTopic) {
+        Optional<Script> optionalScript = scriptRepository.findByRecordIdAndUserId(scriptId, userId);
+
+        if (optionalScript.isEmpty()) {
+            log.info("No script found for userId: {}, scriptId: {}", userId, scriptId);
+            return null;
+        }
+
+        Script script = optionalScript.get();
+        String oldRecordName = script.getRecordName();
+        String recordedDate = script.getRecordedDate();
+
+        // S3에서 파일 이름 변경
+        s3Service.moveFile(userId, recordedDate, oldRecordName, newRecordName);
+
+        // MongoDB에서 recordName과 topic 업데이트
+        script.setRecordName(newRecordName);
+        script.setTopic(newTopic);
+        return scriptRepository.save(script);
+    }
+
+
+    public void deleteScript(String userId, String recordId) {
+        Script script = scriptRepository.findByRecordIdAndUserId(recordId, userId)
+                .orElseThrow(() -> new NoSuchElementException("Record not found for userId: " + userId + ", recordId: " + recordId));
+
+        scriptRepository.delete(script);
     }
 }

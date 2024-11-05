@@ -9,4 +9,5 @@ public class AudioUploadDTO {
 
     private String fileName;
     private String s3Url;
+    private String recordId;
 }
