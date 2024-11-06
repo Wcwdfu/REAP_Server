@@ -2,7 +2,6 @@ package Team_REAP.appserver.DB.mongo.service;
 
 import Team_REAP.appserver.DB.mongo.Entity.Script;
 import Team_REAP.appserver.DB.mongo.repository.ScriptRepository;
-import Team_REAP.appserver.STT.dto.AudioFullDataDto;
 import Team_REAP.appserver.STT.dto.ScriptTextDataDTO;
 import Team_REAP.appserver.STT.service.S3Service;
 import lombok.RequiredArgsConstructor;
@@ -110,5 +109,9 @@ public class ScriptService {
                 .orElseThrow(() -> new NoSuchElementException("Record not found for userId: " + userId + ", recordId: " + recordId));
 
         scriptRepository.delete(script);
+    }
+
+    public boolean isRecordIdDuplicate(String recordId) {
+        return scriptRepository.findByRecordId(recordId).isPresent();
     }
 }

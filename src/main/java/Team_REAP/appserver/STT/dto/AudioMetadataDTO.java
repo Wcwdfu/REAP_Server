@@ -7,6 +7,7 @@ import lombok.Getter;
 @Getter
 public class AudioMetadataDTO {
 
+    private String recordId;
     private String fileName;
     private String recordedDate;
     private String uploadedDate;

@@ -2,7 +2,6 @@ package Team_REAP.appserver.STT.controller;
 
 import Team_REAP.appserver.DB.mongo.Entity.Script;
 import Team_REAP.appserver.DB.mongo.service.ScriptService;
-import Team_REAP.appserver.STT.dto.AudioFullDataDto;
 import Team_REAP.appserver.STT.dto.AudioMetadataDTO;
 import Team_REAP.appserver.STT.dto.ScriptTextDataDTO;
 import Team_REAP.appserver.STT.service.S3Service;
@@ -84,7 +83,7 @@ public class S3Controller {
         List<AudioMetadataDTO> audioMetadataDTOS = new ArrayList<>();
 
         for (Script recentScript : recentScripts) {
-            AudioMetadataDTO audioMetadataDTO = new AudioMetadataDTO(recentScript.getRecordName(),recentScript.getRecordedDate() ,recentScript.getUploadedDate(), recentScript.getUploadedTime(), recentScript.getTopic());
+            AudioMetadataDTO audioMetadataDTO = new AudioMetadataDTO(recentScript.getRecordId(), recentScript.getRecordName(),recentScript.getRecordedDate() ,recentScript.getUploadedDate(), recentScript.getUploadedTime(), recentScript.getTopic());
             audioMetadataDTOS.add(audioMetadataDTO);
         }
 
@@ -96,13 +95,12 @@ public class S3Controller {
     public ResponseEntity<Object> showAudioScript(@AuthUser String userid,
                                                   @PathVariable("recordedDate") String recordedDate){
 
-        // TODO : userid 등등의 뭔가를 가져와서 mongodb 객체 id를 찾을 수 있도록 해야함
 
         List<Script> simpleScripts = scriptService.findScriptsByUserIdAndRecordedDate(userid, recordedDate);
         List<AudioMetadataDTO> audioMetadataDTOS = new ArrayList<>();
 
         for (Script simpleScript : simpleScripts) {
-            AudioMetadataDTO audioMetadataDTO = new AudioMetadataDTO(simpleScript.getRecordName(),simpleScript.getRecordedDate() ,simpleScript.getUploadedDate(), simpleScript.getUploadedTime(), simpleScript.getTopic());
+            AudioMetadataDTO audioMetadataDTO = new AudioMetadataDTO(simpleScript.getRecordId(), simpleScript.getRecordName(),simpleScript.getRecordedDate() ,simpleScript.getUploadedDate(), simpleScript.getUploadedTime(), simpleScript.getTopic());
             audioMetadataDTOS.add(audioMetadataDTO);
         }
 

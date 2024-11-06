@@ -5,6 +5,7 @@ import Team_REAP.appserver.DB.mongo.service.ScriptService;
 import Team_REAP.appserver.Deprecated.HashUtils;
 import Team_REAP.appserver.RAG.RAG.service.ChromaDBService;
 import Team_REAP.appserver.STT.dto.AudioUploadDTO;
+import Team_REAP.appserver.STT.exception.DuplicateFileException;
 import Team_REAP.appserver.STT.exception.InvalidFileFormatException;
 import Team_REAP.appserver.STT.util.MetadataUtils;
 import Team_REAP.appserver.STT.util.STTUtils;
@@ -40,10 +41,23 @@ public class AudioService {
         // 올바른 파일 확장자 체크
         validateFileExtension(media);
 
+        // 중복된 파일인지 체크
+
+
         // 임시 파일 생성
         File tempFile = null;
         try {
             tempFile = metadataUtils.saveMultipleFileToTmpFile(media);
+
+            // MongoDB 저장
+            String recordId = null;
+
+            recordId = HashUtils.generateFileHash(tempFile);
+            if (scriptService.isRecordIdDuplicate(recordId)) {
+                throw new DuplicateFileException("Duplicate recordId found: " + recordId);
+            }
+
+
             // STT 처리
             String sttResult = sttUtils.requestStt(tempFile);
 
@@ -57,13 +71,7 @@ public class AudioService {
             // 스크립트 생성
             String scriptContent = sttUtils.makeScript(sttResult, creationDateTimeKST);
 
-            // MongoDB 저장
-            String recordId = null;
-            try {
-                recordId = HashUtils.generateFileHash(tempFile);
-            } catch (NoSuchAlgorithmException e) {
-                throw new RuntimeException(e);
-            }
+
             String fileName = media.getOriginalFilename();
             String uploadedDate = LocalDate.now().toString();
             String uploadedTime = LocalDateTime.now().toString();
@@ -89,7 +97,9 @@ public class AudioService {
             // S3 업로드
             String audioS3Url = s3Service.upload(tempFile, fileName, userName, creationDateKST);
 
-            return new AudioUploadDTO(fileName, audioS3Url, recordId);
+            return new AudioUploadDTO(fileName, audioS3Url);
+        } catch (NoSuchAlgorithmException e) { // 해쉬 관련
+            throw new RuntimeException(e);
         } finally {
             // 임시 파일 삭제
 //            if (tempFile.exists() && !tempFile.delete()) {
