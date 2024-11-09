@@ -3,7 +3,7 @@ package Team_REAP.appserver.STT.service;
 import Team_REAP.appserver.DB.mongo.Entity.Script;
 import Team_REAP.appserver.DB.mongo.service.ScriptService;
 import Team_REAP.appserver.Deprecated.HashUtils;
-import Team_REAP.appserver.DB.Chroma.service.ChromaDBService;
+import Team_REAP.appserver.DB.chroma.service.ChromaDBService;
 import Team_REAP.appserver.STT.dto.AudioUploadDTO;
 import Team_REAP.appserver.STT.exception.DuplicateFileException;
 import Team_REAP.appserver.STT.exception.InvalidFileFormatException;

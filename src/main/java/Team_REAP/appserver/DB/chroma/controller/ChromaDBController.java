@@ -1,4 +1,4 @@
-package Team_REAP.appserver.DB.Chroma.controller;
+package Team_REAP.appserver.DB.chroma.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.ai.document.Document;

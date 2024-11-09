@@ -1,5 +1,6 @@
 package Team_REAP.appserver.STT.controller;
 
+import Team_REAP.appserver.DB.chroma.service.ChromaDBService;
 import Team_REAP.appserver.DB.mongo.Entity.Script;
 import Team_REAP.appserver.DB.mongo.service.ScriptService;
 import Team_REAP.appserver.STT.dto.AudioMetadataDTO;
@@ -7,6 +8,7 @@ import Team_REAP.appserver.STT.dto.ScriptTextDataDTO;
 import Team_REAP.appserver.STT.service.S3Service;
 import Team_REAP.appserver.common.login.ano.AuthUser;
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,13 +24,12 @@ import java.util.List;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api")
 public class S3Controller {
-    @Autowired
-    private S3Service s3Service;
-
-    @Autowired
-    private ScriptService scriptService;
+    private final S3Service s3Service;
+    private final ScriptService scriptService;
+    private final ChromaDBService chromaDBService;
 
     @Operation(summary = "S3 업로드 - 테스트")
     @PostMapping(path = "/test/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -57,7 +58,7 @@ public class S3Controller {
     }
 
     @Operation(summary = "음성 데이터 및 정보 삭제",
-            description = "클라이언트가 음성 데이터 및 정보에 대한 삭제 요청을 보내면, S3와 몽고DB에 있는 데이터를 삭제시킵니다.")
+            description = "클라이언트가 음성 데이터 및 정보에 대한 삭제 요청을 보내면, S3,몽고DB,chromaDB에 있는 데이터를 삭제시킵니다.")
     @DeleteMapping("/auth/script/{date}")
     public ResponseEntity<String> deleteAudio(@AuthUser String userId,
                                               @PathVariable String date,
@@ -68,6 +69,8 @@ public class S3Controller {
         scriptService.deleteScript(userId, recordId);
         // S3에서 삭제
         s3Service.deleteFile(userId, date, fileName);
+        //chromaDB에서 삭제
+        chromaDBService.deleteDocuments(List.of(recordId));
 
         return ResponseEntity.status(HttpStatus.OK).body("success audio delete");
     }
