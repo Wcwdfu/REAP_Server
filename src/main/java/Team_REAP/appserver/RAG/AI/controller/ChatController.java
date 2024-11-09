@@ -44,11 +44,11 @@ public class ChatController {
 
 
     @Operation(
-            summary = "테스트용 :: AI에 질문하기",
+            summary = "테스트용 :: AI에 질문하고, stream으로 대답받기",
             description = "질문을 넣어주면 대답을 반환합니다.")
-    @PostMapping(value = "/test/stream/ask", produces = "text/event-stream;charset=UTF-8")
+    @PostMapping(value = "/test/stream/ask", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> askStream(
-            @AuthUser String userid,
+//            @AuthUser String userId,
             @RequestBody Question question
     ) {
         return chatService.generateStreamChatResponse(question).answer();

@@ -70,8 +70,8 @@ public class ChatService {
     }
 
 
+    //답변을 스트림으로 전달하기
     public StreamAnswer generateStreamChatResponse(Question question) {
-        //답변을 실시간으로 전달하기
         Flux<String> answer=chatClient.prompt()
                 .user(question.question())
                 .advisors(new QuestionAnswerAdvisor(vectorStore))
