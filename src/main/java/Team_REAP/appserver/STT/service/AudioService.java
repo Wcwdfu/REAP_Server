@@ -3,7 +3,7 @@ package Team_REAP.appserver.STT.service;
 import Team_REAP.appserver.DB.mongo.Entity.Script;
 import Team_REAP.appserver.DB.mongo.service.ScriptService;
 import Team_REAP.appserver.Deprecated.HashUtils;
-import Team_REAP.appserver.RAG.RAG.service.ChromaDBService;
+import Team_REAP.appserver.DB.Chroma.service.ChromaDBService;
 import Team_REAP.appserver.STT.dto.AudioUploadDTO;
 import Team_REAP.appserver.STT.exception.InvalidFileFormatException;
 import Team_REAP.appserver.STT.util.MetadataUtils;
@@ -35,7 +35,7 @@ public class AudioService {
     private final MetadataUtils metadataUtils;
     private final S3Service s3Service;
 
-    public AudioUploadDTO processAudio(MultipartFile media, String userName, String topic) throws IOException {
+    public AudioUploadDTO processAudio(MultipartFile media, String userId, String topic) throws IOException {
 
         // 올바른 파일 확장자 체크
         validateFileExtension(media);
@@ -71,7 +71,7 @@ public class AudioService {
             // Script 객체 생성
             Script script = Script.builder()
                     .recordId(recordId)
-                    .userId(userName)
+                    .userId(userId)
                     .recordName(fileName)
                     .recordedDate(creationDateKST)
                     .uploadedDate(uploadedDate)
@@ -84,10 +84,10 @@ public class AudioService {
             scriptService.saveScript(script);
 
             // ChromaDB에 Script 추가
-            chromaDBService.addScriptToVectorStore(script);
+            chromaDBService.addScriptToVectorStore(script,userId);
 
             // S3 업로드
-            String audioS3Url = s3Service.upload(tempFile, fileName, userName, creationDateKST);
+            String audioS3Url = s3Service.upload(tempFile, fileName, userId, creationDateKST);
 
             return new AudioUploadDTO(fileName, audioS3Url, recordId);
         } finally {
