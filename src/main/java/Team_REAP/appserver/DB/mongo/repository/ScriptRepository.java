@@ -12,5 +12,6 @@ public interface ScriptRepository extends MongoRepository<Script, String> {
     Script findFirstByUserIdAndRecordedDateAndRecordName(String userId, String recordedDate, String recordName);
 
     Optional<Script> findByRecordIdAndUserId(String recordId, String userId);
+    Optional<Script> findByRecordId(String recordId);
 }
 
