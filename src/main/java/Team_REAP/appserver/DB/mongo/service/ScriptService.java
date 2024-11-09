@@ -3,7 +3,7 @@ package Team_REAP.appserver.DB.mongo.service;
 import Team_REAP.appserver.DB.mongo.Entity.Script;
 import Team_REAP.appserver.DB.mongo.repository.ScriptRepository;
 import Team_REAP.appserver.STT.dto.ScriptTextDataDTO;
-import Team_REAP.appserver.STT.service.S3Service;
+import Team_REAP.appserver.DB.S3.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
