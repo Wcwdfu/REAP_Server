@@ -1,6 +1,7 @@
 package Team_REAP.appserver.STT.controller;
 
 import Team_REAP.appserver.STT.dto.AudioUploadDTO;
+import Team_REAP.appserver.STT.exception.DuplicateFileException;
 import Team_REAP.appserver.STT.service.AudioService;
 import Team_REAP.appserver.common.login.ano.AuthUser;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,6 +37,8 @@ public class STTController {
         try {
             AudioUploadDTO audioUploadDTO = audioService.processAudio(media, userId, topic);
             return ResponseEntity.status(HttpStatus.OK).body(audioUploadDTO);
+        } catch(DuplicateFileException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error occurred: " + e.getMessage());
         } catch (Exception e) {
             log.error("Error processing audio", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred: " + e.getMessage());
