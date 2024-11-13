@@ -41,26 +41,20 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        // request Header에서 AccessToken을 가져온다.
         String atc = request.getHeader("Authorization");
 
-        // 토큰이 없으면 필터 체인 통과
         if (!StringUtils.hasText(atc)) {
-            doFilter(request, response, filterChain);
+            filterChain.doFilter(request, response);
             return;
         }
 
-        // AccessToken을 검증하고, 만료되었을 경우 예외 발생
         log.info("JwtAuthFilter : AccessToken 검증");
         if (!jwtUtil.verifyToken(atc)) {
             log.info("verifyToken out");
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Access Token 만료!");
-            return;
+            throw new JwtException("Access Token 만료!");
         }
 
         log.info("JwtAuthFilter : AccessToken 값 있음");
-        // AccessToken의 값이 있고, 유효한 경우에 진행한다.
         Member findMember = memberRepository.findByKakaoId(jwtUtil.getUid(atc))
                 .orElseThrow(() -> new IllegalStateException("유저 정보를 찾을 수 없습니다."));
 
@@ -73,12 +67,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 .build();
         log.info("시큐리티 등록 user 객체 생성 성공");
 
-        // SecurityContext에 인증 객체를 등록
         Authentication auth = getAuthentication(userDto);
         SecurityContextHolder.getContext().setAuthentication(auth);
 
         filterChain.doFilter(request, response);
     }
+
 
 
 
