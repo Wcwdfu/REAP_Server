@@ -1,4 +1,4 @@
-package Team_REAP.appserver.STT.service;
+package Team_REAP.appserver.DB.S3.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;

@@ -1,4 +1,4 @@
-package Team_REAP.appserver.DB.mongo.controller.dto;
+package Team_REAP.appserver.DB.mongo.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

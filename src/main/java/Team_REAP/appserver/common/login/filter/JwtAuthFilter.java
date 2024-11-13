@@ -41,52 +41,38 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
-        // request Header에서 AccessToken을 가져온다.
         String atc = request.getHeader("Authorization");
 
-        log.info("JwtAuthFilter : 토큰 검사 생략");
-        // 토큰 검사 생략(모두 허용 URL의 경우 토큰 검사 통과)
         if (!StringUtils.hasText(atc)) {
-            doFilter(request, response, filterChain);
+            filterChain.doFilter(request, response);
             return;
         }
 
-        //여기까진 됐음
         log.info("JwtAuthFilter : AccessToken 검증");
-        //log.info("Header value: {}", atc);
-        // AccessToken을 검증하고, 만료되었을경우 예외를 발생시킨다.
         if (!jwtUtil.verifyToken(atc)) {
             log.info("verifyToken out");
             throw new JwtException("Access Token 만료!");
         }
-        //여기부터 시작
+
         log.info("JwtAuthFilter : AccessToken 값 있음");
-        // AccessToken의 값이 있고, 유효한 경우에 진행한다.
-        if (jwtUtil.verifyToken(atc)) {
-            log.info("토큰 검증 다시 진입");
-            // AccessToken 내부의 payload에 있는 id로 user를 조회한다. 없다면 예외를 발생시킨다 -> 정상 케이스가 아님
-            Member findMember = memberRepository.findByKakaoId(jwtUtil.getUid(atc)) // mysql에서 유저정보 꺼내오기
-                    .orElseThrow(IllegalStateException::new);
+        Member findMember = memberRepository.findByKakaoId(jwtUtil.getUid(atc))
+                .orElseThrow(() -> new IllegalStateException("유저 정보를 찾을 수 없습니다."));
 
-            log.info("JwtAuthFilter - findMember: {}", findMember.toString());
+        log.info("JwtAuthFilter - findMember: {}", findMember.toString());
+        SecurityUserDto userDto = SecurityUserDto.builder()
+                .memberNo(findMember.getMemberNo())
+                .id(findMember.getKakaoId())
+                .role("ROLE_".concat(findMember.getUserRole()))
+                .nickname(findMember.getNickname())
+                .build();
+        log.info("시큐리티 등록 user 객체 생성 성공");
 
-            log.info("유저 조회 성공");
-            // SecurityContext에 등록할 User 객체를 만들어준다.
-            SecurityUserDto userDto = SecurityUserDto.builder()
-                    .memberNo(findMember.getMemberNo())
-                    .id(findMember.getKakaoId())
-                    .role("ROLE_".concat(findMember.getUserRole()))
-                    .nickname(findMember.getNickname())
-                    .build();
-            log.info("시큐리티 등록 user 객체 생성 성공");
-            // SecurityContext에 인증 객체를 등록해준다.
-            Authentication auth = getAuthentication(userDto);
-            SecurityContextHolder.getContext().setAuthentication(auth);
-        }
+        Authentication auth = getAuthentication(userDto);
+        SecurityContextHolder.getContext().setAuthentication(auth);
 
         filterChain.doFilter(request, response);
     }
+
 
 
 

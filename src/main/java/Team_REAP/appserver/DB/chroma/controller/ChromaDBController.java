@@ -1,7 +1,6 @@
-package Team_REAP.appserver.RAG.RAG.controller;
+package Team_REAP.appserver.DB.chroma.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.transformer.splitter.TextSplitter;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
@@ -11,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
@@ -47,10 +47,17 @@ public class ChromaDBController {
 
     @Operation(
             summary = "테스트용 :: 크로마db 유사도 검색",
-            description = "내용없음")
+            description = "query를 보내면 해당 단어와 유사도가 가장 높은 3개의 문서를 반환합니다.")
     @GetMapping("/test/search")
-    public String search(){
-        List<Document> results = vectorStore.similaritySearch(SearchRequest.query("classic novel about wealth and society").withTopK(3));
+    public String search(
+            @RequestParam("query") String query
+    ){
+        List<Document> results = vectorStore.similaritySearch(SearchRequest.query(query).withTopK(3));
         return results.toString();
+
+        // 수동으로 UTF-8로 인코딩하여 문자열 반환
+//        String response = results.toString();
+//        byte[] bytes = response.getBytes(StandardCharsets.ISO_8859_1);
+//        return new String(bytes, StandardCharsets.UTF_8);
     }
 }
