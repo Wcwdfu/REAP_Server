@@ -6,6 +6,7 @@ import Team_REAP.appserver.STT.dto.ScriptTextDataDTO;
 import Team_REAP.appserver.DB.S3.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -94,6 +95,9 @@ public class ScriptService {
         String oldRecordName = script.getRecordName();
         String recordedDate = script.getRecordedDate();
 
+        newRecordName = appendExtensionIfMissing(newRecordName, oldRecordName);
+
+
         // S3에서 파일 이름 변경
         s3Service.moveFile(userId, recordedDate, oldRecordName, newRecordName);
 
@@ -101,6 +105,21 @@ public class ScriptService {
         script.setRecordName(newRecordName);
         script.setTopic(newTopic);
         return scriptRepository.save(script);
+    }
+
+    @NotNull
+    private static String appendExtensionIfMissing(String newRecordName, String oldRecordName) {
+        // newRecordName에 확장자가 없으면 oldRecordName의 확장자를 붙임
+        if (!newRecordName.contains(".")) {
+            // oldRecordName에서 확장자 추출
+            String extension = "";
+            int dotIndex = oldRecordName.lastIndexOf('.');
+            if (dotIndex != -1 && dotIndex < oldRecordName.length() - 1) {
+                extension = oldRecordName.substring(dotIndex);
+            }
+            newRecordName += extension;
+        }
+        return newRecordName;
     }
 
 
