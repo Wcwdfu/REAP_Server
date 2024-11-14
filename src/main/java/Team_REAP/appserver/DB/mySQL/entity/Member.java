@@ -25,7 +25,7 @@ public class Member {
 
     private String nickname;
 
-    private String email;
+    //private String email;
 
     private String userRole;
 
@@ -34,10 +34,10 @@ public class Member {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public Member(String kakaoId, String nickname, String email, String userRole, String loginApi, String status, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Member(String kakaoId, String nickname, String userRole, String loginApi, String status, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.kakaoId = kakaoId;
         this.nickname = nickname;
-        this.email = email;
+        //this.email = email;
         this.userRole = userRole;
         this.loginApi = loginApi;
         this.status = status;

@@ -15,9 +15,9 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
-    public Optional<Member> findByEmail(String email) {
-        return memberRepository.findByEmail(email);
-    }
+//    public Optional<Member> findByEmail(String email) {
+//        return memberRepository.findByEmail(email);
+//    }
 
     public Member findByMemberNo(Integer memberNo) {
         return memberRepository.findById(memberNo)

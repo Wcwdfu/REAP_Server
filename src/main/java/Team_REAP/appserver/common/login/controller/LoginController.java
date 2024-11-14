@@ -40,18 +40,19 @@ public class LoginController {
             ,description = "클라이언트가 액세스 토큰을 보내면 JWT 토큰을 생성해서 반환합니다.")
     @GetMapping("/api/oauth/kakao")
     public ResponseEntity<LoginResponse> kakaoCallback(@RequestParam String accessToken){
-
+        log.info("login start");
         // 1. 사용자 정보 요청
         Member memberInfo = kakaoApiService.getKakaoMember(accessToken);
         log.info("LoginController - kakaoId: {}", memberInfo.getKakaoId());
-        log.info("LoginController - email: {}", memberInfo.getEmail());
+        //log.info("LoginController - email: {}", memberInfo.getEmail());
         log.info("LoginController - nickname: {}", memberInfo.getNickname());
 
 
         // 2. 사용자 조회 및 회원가입 처리
         Member member = memberRepository.findByKakaoId(memberInfo.getKakaoId())
                 .orElseGet(() -> {
-                    Member newMember = new Member(memberInfo.getKakaoId(), memberInfo.getNickname(), memberInfo.getEmail(), "USER", "KAKAO", "ACTIVE", LocalDateTime.now(), LocalDateTime.now());
+                    //Member newMember = new Member(memberInfo.getKakaoId(), memberInfo.getNickname(), memberInfo.getEmail(), "USER", "KAKAO", "ACTIVE", LocalDateTime.now(), LocalDateTime.now());
+                    Member newMember = new Member(memberInfo.getKakaoId(), memberInfo.getNickname(), "USER", "KAKAO", "ACTIVE", LocalDateTime.now(), LocalDateTime.now());
                     return memberRepository.save(newMember);
                 });
 

@@ -47,9 +47,10 @@ public class KakaoApiService {
     // JsonNode에서 Member 객체로 매핑
     private Member extractKakaoUserInfo(JsonNode userInfo) {
         String kakaoId = userInfo.path("id").asText();
-        String email = userInfo.path("kakao_account").path("email").asText();
+        //String email = userInfo.path("kakao_account").path("email").asText();
         String nickname = userInfo.path("properties").path("nickname").asText();
 
-        return new Member(kakaoId, nickname, email, DEFAULT_ROLE, PROVIDER_KAKAO, STATUS_ACTIVE, LocalDateTime.now(), LocalDateTime.now());
+        //return new Member(kakaoId, nickname, email, DEFAULT_ROLE, PROVIDER_KAKAO, STATUS_ACTIVE, LocalDateTime.now(), LocalDateTime.now());
+        return new Member(kakaoId, nickname, DEFAULT_ROLE, PROVIDER_KAKAO, STATUS_ACTIVE, LocalDateTime.now(), LocalDateTime.now());
     }
 }

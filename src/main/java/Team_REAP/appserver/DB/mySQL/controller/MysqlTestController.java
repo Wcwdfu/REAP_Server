@@ -25,7 +25,7 @@ public class MysqlTestController {
         Member dummyMember = Member.builder()
                 .kakaoId("dummy_kakao_id")
                 .nickname("dummy_nickname")
-                .email("dummy@example.com")
+                //.email("dummy@example.com")
                 .userRole("USER")
                 .loginApi("KAKAO")
                 .status("ACTIVE")
