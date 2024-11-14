@@ -39,16 +39,16 @@ public class ScriptService {
         return scripts;
     }
 
-    public Script findScriptByUserIdAndRecordedDateAndRecordName(String userId, String recordedDate, String recordName) {
-        Script script = scriptRepository.findFirstByUserIdAndRecordedDateAndRecordName(userId, recordedDate, recordName);
+    public Script findScriptByUserIdAndRecordedDateAndRecordId(String userId, String recordedDate, String recordId) {
+        Script script = scriptRepository.findFirstByUserIdAndRecordedDateAndRecordId(userId, recordedDate, recordId);
         if (script == null) {
-            log.info("No script found for userId: {}, recordedDate: {}, recordName: {}", userId, recordedDate, recordName);
+            log.info("No script found for userId: {}, recordedDate: {}, recordName: {}", userId, recordedDate, recordId);
         }
         return script;
     }
 
-    public List<ScriptTextDataDTO> getFormattedAudioData(String userid, String recordedDate, String recordName) {
-        Script script = findScriptByUserIdAndRecordedDateAndRecordName(userid, recordedDate, recordName);
+    public List<ScriptTextDataDTO> getFormattedAudioData(String userid, String recordedDate, String recordId) {
+        Script script = findScriptByUserIdAndRecordedDateAndRecordId(userid, recordedDate, recordId);
 
         List<ScriptTextDataDTO> formattedScripts = Arrays.stream(script.getText().split("\n"))
                 .map(line -> {

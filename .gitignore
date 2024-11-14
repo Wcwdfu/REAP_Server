@@ -40,4 +40,4 @@ out/
 *.properties
 
 ### not upload logs ###
-#logs/
+logs/

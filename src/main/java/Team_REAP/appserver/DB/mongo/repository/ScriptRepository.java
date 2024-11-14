@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface ScriptRepository extends MongoRepository<Script, String> {
     List<Script> findByUserIdOrderByUploadedDateDescUploadedTimeDesc(String userId);
     List<Script> findByUserIdAndRecordedDateOrderByUploadedDateDescUploadedTimeDesc(String userId, String recordedDate);
-    Script findFirstByUserIdAndRecordedDateAndRecordName(String userId, String recordedDate, String recordName);
+    Script findFirstByUserIdAndRecordedDateAndRecordId(String userId, String recordedDate, String recordId);
 
     Optional<Script> findByRecordIdAndUserId(String recordId, String userId);
     Optional<Script> findByRecordId(String recordId);

@@ -103,9 +103,9 @@ public class ViewController {
     public ResponseEntity<List<ScriptTextDataDTO>> showAudioScript(
             @AuthUser String userid,
             @PathVariable("date") String recordedDate,
-            @RequestParam("recordName") String recordName) {
+            @RequestParam("recordId") String recordId) {
 
-        List<ScriptTextDataDTO> audioTextDataDtos = scriptService.getFormattedAudioData(userid, recordedDate, recordName);
+        List<ScriptTextDataDTO> audioTextDataDtos = scriptService.getFormattedAudioData(userid, recordedDate, recordId);
         return ResponseEntity.status(HttpStatus.OK).body(audioTextDataDtos);
     }
 
