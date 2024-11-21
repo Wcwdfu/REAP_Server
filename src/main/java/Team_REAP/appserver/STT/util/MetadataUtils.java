@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -19,7 +20,12 @@ import java.time.format.DateTimeFormatter;
 @Component
 public class MetadataUtils {
 
-    // 임시 파일 생성 및 저장 메서드
+    /**
+     * 임시 파일 생성 및 저장 메서드
+     *
+     * @param media 사용자 음성
+     * @return File 임시 파일 객체
+     */
     public File saveMultipleFileToTmpFile(MultipartFile media) throws IOException {
 
         // MultipartFile을 임시 파일로 저장
@@ -30,7 +36,12 @@ public class MetadataUtils {
 
     }
 
-    //MP4 파일에서 생성 시간 추출 메서드
+    /**
+     * MP4 파일에서 생성 시간 추출 메서드
+     *
+     * @param tempFile 임시 음성 파일
+     * @return LocalDateTime MP4 생성 시간
+     */
     public LocalDateTime readCreationTimeFromMp4(File tempFile) throws IOException {
         log.info("MP4 파일 메타데이터 읽기");
         // MP4 파일 메타데이터 읽기
@@ -43,7 +54,12 @@ public class MetadataUtils {
         }
     }
 
-    // UTC 시간을 KST로 변환하는 메서드
+    /**
+     * UTC 시간을 KST로 변환하는 메서드
+     *
+     * @param creationDateTime UTC 시간
+     * @return LocalDateTime KST로 변환한 시간
+     */
     public LocalDateTime convertToKST(LocalDateTime creationDateTime){
         log.info("시간대 변환");
         // 시간대를 변환 (예: 한국 시간대로 변환)
@@ -51,7 +67,13 @@ public class MetadataUtils {
         return creationDateTime.atZone(ZoneOffset.UTC).withZoneSameInstant(zoneId).toLocalDateTime();
     }
 
-    // LocalDateTime을 지정된 패턴으로 포맷팅하는 메서드
+    /**
+     * LocalDateTime을 지정된 패턴으로 포맷팅하는 메서드
+     *
+     * @param dateTime UTC 시간
+     * @param pattern 패턴
+     * @return String 패턴에 맞게 변환한 시간
+     */
     public String formatDateTime(LocalDateTime dateTime, String pattern){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
         return dateTime.format(formatter);

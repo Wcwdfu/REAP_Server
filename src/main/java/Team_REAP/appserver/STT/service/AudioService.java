@@ -37,6 +37,17 @@ public class AudioService {
     private final MetadataUtils metadataUtils;
     private final S3Service s3Service;
 
+    /**
+     * 음성 파일 업로드 구현
+     *
+     * @param media 사용자 음성
+     * @param userId 사용자 id
+     * @param topic 음성 파일 주제
+     * @return AudioUpload 객체
+     * @exception Exception 종합예외 처리
+     * @exception NoSuchAlgorithmException 해시 생성 실패
+     * @exception IOException 임시 파일 삭제 메시지
+     */
     public AudioUploadDTO processAudio(MultipartFile media, String userId, String topic) throws IOException {
 
         // 올바른 파일 확장자 체크
@@ -117,6 +128,12 @@ public class AudioService {
         }
     }
 
+    /**
+     * 파일 확장자 검증
+     *
+     * @param media 사용자 음성 데이터
+     * @exception InvalidFileFormatException 확장자 오류 메시지
+     */
     private void validateFileExtension(MultipartFile media) {
         List<String> allowedExtensions = Arrays.asList("wav", "m4a");
         String mediaFileName = Objects.requireNonNull(media.getOriginalFilename());

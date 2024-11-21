@@ -19,13 +19,24 @@ public class KakaoApiService {
 
     private final String userInfoUrl = "https://kapi.kakao.com/v2/user/me"; // 사용자 정보를 가져오는 API의 URL
 
+    /**
+     * 카카오 액세스 토큰으로 사용자 정보 가져오기
+     *
+     * @param accessToken 카카오 액세스 토큰
+     * @return Member 추출한 사용자 정보
+     */
     // 카카오 사용자 정보를 가져와 Member 객체로 변환하는 메서드
     public Member getKakaoMember(String accessToken) {
         JsonNode userInfo = fetchJsonKakaoUserInfo(accessToken);
         return extractKakaoUserInfo(userInfo);
     }
 
-    // 공통 메서드: 카카오 사용자 정보를 가져옴
+    /**
+     * 카카오 액세스 토큰으로 Json 형태의 사용자 정보 가져오기
+     *
+     * @param accessToken 카카오 액세스 토큰
+     * @return JsonNode 추출한 Json형태의 사용자 정보
+     */
     private JsonNode fetchJsonKakaoUserInfo(String accessToken) {
 
         RestTemplate restTemplate = new RestTemplate();
@@ -44,6 +55,12 @@ public class KakaoApiService {
         }
     }
 
+    /**
+     * 카카오 액세스 토큰으로 Json 형태의 사용자 정보 가져오기
+     *
+     * @param userInfo Json 형태의 사용자 정보
+     * @return Member Json에서 추출한 사용자 정보
+     */
     // JsonNode에서 Member 객체로 매핑
     private Member extractKakaoUserInfo(JsonNode userInfo) {
         String kakaoId = userInfo.path("id").asText();

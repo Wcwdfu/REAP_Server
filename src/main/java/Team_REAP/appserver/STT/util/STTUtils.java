@@ -30,6 +30,12 @@ public class STTUtils {
     @Value("${naver.cloud.secret.key}")
     private String secretKey;
 
+    /**
+     * 네이버 클라우드 Api 요청 메서드
+     *
+     * @param tempFile 임시 음성 파일
+     * @return String String으로 된 Json형식의 STT결과
+     */
     public String requestStt(File tempFile) {
         // 네이버 클라우드 STT 요청 로직 구현
         String url = apiUrl + "/recognizer/upload";

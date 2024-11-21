@@ -14,11 +14,23 @@ public class RefreshTokenService {
 
     private final RefreshTokenRepository tokenRepository;
 
+    /**
+     * 커스텀 토큰 DB에 저장
+     *
+     * @param id 카카오 사용자 id
+     * @param refreshToken 커스텀 리프레시 토큰
+     * @param accessToken 커스텀 액세스 토큰
+     */
     @Transactional
     public void saveTokenInfo(String id, String refreshToken, String accessToken) {
         tokenRepository.save(new RefreshToken(id, accessToken, refreshToken));
     }
 
+    /**
+     * 커스텀 토큰 DB에서 제거
+     *
+     * @param accessToken 커스텀 액세스 토큰
+     */
     @Transactional
     public void removeRefreshToken(String accessToken) {
         log.info("RefreshTokenService - removeRefreshToken");
