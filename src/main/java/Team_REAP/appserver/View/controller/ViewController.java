@@ -162,7 +162,7 @@ public class ViewController {
 
 
     /**
-     * 파일 수정 - recordName과 topic 동시에 업데이트
+     * 파일 삭제 - s3,mongo,chroma db에서 데이터 삭제
      *
      * @param userId 사용자 id
      * @param date 삭제할 음성 파일 날짜
@@ -170,7 +170,6 @@ public class ViewController {
      * @param recordId 삭제할 음성 파일 id
      * @return 성공 메시지
      */
-    // 파일 삭제 - s3,mongo,chroma db에서 데이터 삭제
     @Operation(summary = "음성 데이터 및 정보 삭제",
             description = "클라이언트가 음성 데이터 및 정보에 대한 삭제 요청을 보내면, S3,몽고DB,chromaDB에 있는 데이터를 삭제시킵니다.")
     @DeleteMapping("/script/{date}")
