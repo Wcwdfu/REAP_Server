@@ -30,13 +30,18 @@ public class JwtUtil {
     }
 
 
+    /**
+     * 토큰 생성 메서드
+     *
+     * @param id Kakao에서 가져온 사용자 id
+     * @param role 사용자 권한(사용자, 관리자)
+     * @return GeneratedToken 생성된 토큰 객체
+     */
     public GeneratedToken generateToken(String id, String role) {
         log.info("JwtUtil - generateToken");
         // refreshToken과 accessToken을 생성한다.
         String refreshToken = generateRefreshToken(id, role);
         String accessToken = generateAccessToken(id, role);
-        log.info("JwtUtil - accessToken: {}",accessToken);
-        log.info("JwtUtil - refreshToken: {}",refreshToken);
 
         // 토큰을 Redis에 저장한다.
         tokenService.saveTokenInfo(id, refreshToken, accessToken);
@@ -44,6 +49,14 @@ public class JwtUtil {
         return new GeneratedToken(accessToken, refreshToken);
     }
 
+
+    /**
+     * 리프레시 토큰 생성 메서드
+     *
+     * @param id Kakao에서 가져온 사용자 id
+     * @param role 사용자 권한(사용자, 관리자)
+     * @return String 커스텀 리프레시 토큰
+     */
     public String generateRefreshToken(String id, String role) {
         log.info("JwtUtil - generateRefreshToken");
         // 토큰의 유효 기간을 밀리초 단위로 설정.
@@ -63,7 +76,13 @@ public class JwtUtil {
                 .compact();
     }
 
-
+    /**
+     * 액세스 토큰 생성 메서드
+     *
+     * @param id Kakao에서 가져온 사용자 id
+     * @param role 사용자 권한(사용자, 관리자)
+     * @return String 커스텀 액세스 토큰
+     */
     public String generateAccessToken(String id, String role) {
         log.info("JwtUtil - generateAccessToken");
         long tokenPeriod = 1000L * 60L * 60L; // 60분
@@ -81,15 +100,17 @@ public class JwtUtil {
 
     }
 
-
+    /**
+     * 리프레시 토큰 생성 메서드
+     *
+     * @param token Kakao에서 가져온 사용자 id
+     * @return boolean 토큰 검증 결과 ( true: 성공, false: 실패)
+     * @throws Exception 검증 실패 시 false 반환
+     */
     public boolean verifyToken(String token) {
 
         try {
             log.info("JwtUtil - verifyToken 진입");
-            log.info("JwtUtil - secretKey: {}", secretKey);
-            log.info("JwtUtil - token: {}", token);
-
-
             Jws<Claims> claims = Jwts.parser()
                     .verifyWith(secretKey) // 비밀키를 설정하여 파싱한다.
                     .build()
@@ -100,18 +121,26 @@ public class JwtUtil {
                     .after(new Date());  // 만료 시간이 현재 시간 이후인지 확인하여 유효성 검사 결과를 반환
         } catch (Exception e) {
             log.info("Exception : {}", e.getMessage());
-            log.info("false");
             return false;
         }
     }
 
-
-    // 토큰에서 payload안 sub를 추출한다.(=> id )
+    /**
+     * jwt sub 추출 메서드
+     *
+     * @param token 커스텀 액세스 토큰
+     * @return String jwt payload 내부 sub => id
+     */
     public String getUid(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getSubject();
     }
 
-    // 토큰에서 ROLE(권한)만 추출한다.
+    /**
+     * jwt role 추출 메서드
+     *
+     * @param token 커스텀 액세스 토큰
+     * @return String role 사용자 권한(사용자, 관리자)
+     */
     public String getRole(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("role", String.class);
     }

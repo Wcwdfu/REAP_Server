@@ -1,6 +1,7 @@
 package Team_REAP.appserver.common.login.controller;
 
 import Team_REAP.appserver.common.login.constants.UserInfoConst;
+import Team_REAP.appserver.common.login.dto.GeneratedToken;
 import Team_REAP.appserver.common.login.dto.LoginResponse;
 import Team_REAP.appserver.common.login.exception.KakaoApiException;
 import Team_REAP.appserver.common.login.service.KakaoApiService;
@@ -8,12 +9,14 @@ import Team_REAP.appserver.common.login.service.RefreshTokenService;
 import Team_REAP.appserver.DB.mySQL.entity.Member;
 import Team_REAP.appserver.DB.mySQL.repository.MemberRepository;
 import Team_REAP.appserver.common.login.util.JwtUtil;
+import Team_REAP.appserver.common.login.util.LoginUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -30,11 +33,9 @@ import static Team_REAP.appserver.common.login.constants.UserInfoConst.*;
 @RestController
 @RequiredArgsConstructor
 public class LoginController {
-
-    private final MemberRepository memberRepository;
-    private final RefreshTokenService tokenService;
     private final KakaoApiService kakaoApiService;
     private final JwtUtil jwtUtil;
+    private final LoginUtil loginUtil;
 
     @Operation(summary = "JWT 토큰 받기"
             ,description = "클라이언트가 액세스 토큰을 보내면 JWT 토큰을 생성해서 반환합니다.")
@@ -44,28 +45,16 @@ public class LoginController {
         // 1. 사용자 정보 요청
         Member memberInfo = kakaoApiService.getKakaoMember(accessToken);
         log.info("LoginController - kakaoId: {}", memberInfo.getKakaoId());
-        //log.info("LoginController - email: {}", memberInfo.getEmail());
         log.info("LoginController - nickname: {}", memberInfo.getNickname());
 
-
         // 2. 사용자 조회 및 회원가입 처리
-        Member member = memberRepository.findByKakaoId(memberInfo.getKakaoId())
-                .orElseGet(() -> {
-                    //Member newMember = new Member(memberInfo.getKakaoId(), memberInfo.getNickname(), memberInfo.getEmail(), "USER", "KAKAO", "ACTIVE", LocalDateTime.now(), LocalDateTime.now());
-                    Member newMember = new Member(memberInfo.getKakaoId(), memberInfo.getNickname(), "USER", "KAKAO", "ACTIVE", LocalDateTime.now(), LocalDateTime.now());
-                    return memberRepository.save(newMember);
-                });
+        Member member = loginUtil.validateAndRegisterMember(memberInfo);
 
         // 3. JWT 생성
-        String customAccessToken = jwtUtil.generateAccessToken(member.getKakaoId(), member.getUserRole());
-        String customRefreshToken = jwtUtil.generateRefreshToken(member.getKakaoId(), member.getUserRole());
-        tokenService.saveTokenInfo(member.getKakaoId(), customRefreshToken, customAccessToken);
+        GeneratedToken generatedToken = jwtUtil.generateToken(member.getKakaoId(), member.getUserRole());
 
-        LoginResponse loginResponse = new LoginResponse(true, customAccessToken);
-
+        // 4. 응답 생성
+        LoginResponse loginResponse = new LoginResponse(true, generatedToken.getAccessToken());
         return ResponseEntity.status(HttpStatus.SC_OK).body(loginResponse);
     }
-
-
-
 }
