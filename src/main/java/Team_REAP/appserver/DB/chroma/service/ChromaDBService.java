@@ -1,7 +1,7 @@
 package Team_REAP.appserver.DB.chroma.service;
 
 import Team_REAP.appserver.DB.mongo.Entity.Script;
-import Team_REAP.appserver.RAG.TextSplitter.CustomTokenTextSplitter;
+import Team_REAP.appserver.RAG.TextSplitter.CustomTextSplitter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;
@@ -18,13 +18,10 @@ public class ChromaDBService {
     private final VectorStore vectorStore;
 
     public void addScriptToVectorStore(Script script,String userId) {
-        CustomTokenTextSplitter splitter = new CustomTokenTextSplitter(
+        CustomTextSplitter splitter = new CustomTextSplitter(
                 1000, // chunkSize
                 200,  // chunkOverlap
-                true, // keepSeparator
-                350,  // minChunkSizeChars
-                5,    // minChunkLengthToEmbed
-                100 // maxNumChunks
+                100
         );
 //        TextSplitter textSplitter = new TokenTextSplitter();
 
