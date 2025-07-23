@@ -1,9 +1,15 @@
+<div align="center">
+  <img width="150" height="150" alt="Logo-removebg-preview" src="https://github.com/user-attachments/assets/71bf9b4c-7a3a-4a5e-b547-91c4ac8bd52e" />
+</div>
+
 # REAP_Service (Server)
-24년도 컴퓨터공학부 졸업프로젝트 REAP(Record Everything And Play) Service 입니다.
+24년도 컴퓨터공학부 졸업프로젝트 REAP(Record Everything And Play) Service 입니다. 
+<br>
+발표영상 : [유튜브 링크](https://www.youtube.com/watch?v=q-nz9tahR1w)
 <br>
 
-<img src="https://github.com/user-attachments/assets/70bae643-3baf-4dd6-8de0-c594de86a414" alt="REAP_Service" width="300">
 
+<img width="900" height="1300" alt="image" src="https://github.com/user-attachments/assets/9c4592c4-ba66-4895-abd1-9474e9b511be" />
 
 녹음 파일을 넣어주면 텍스트로 변환(STT)하여 대화스크립트로 저장합니다.<br>
 해당 내용들을 기반으로 텍스트나 음성으로 질의응답을 할 수 있습니다.(RAG, TTS)<br>
