@@ -20,19 +20,10 @@ public class CustomTextSplitter extends TextSplitter {
 
     private final EncodingRegistry registry = Encodings.newLazyEncodingRegistry();
     private final Encoding encoding;
+    private final int chunkSize; // 청크 하나에 포함되는 최대 토큰수
+    private final int chunkOverlap; // 청크 간 오버랩(겹치는) 토큰 수
+    private final int maxNumChunks; // 최대 몇 개의 청크가 만들어질지 (제한 없으면 매우 큰 값)
 
-    /** 청크 하나에 포함될 최대 토큰 수 */
-    private final int chunkSize;
-    /** 청크 간 오버랩(겹치는) 토큰 수 */
-    private final int chunkOverlap;
-    /** 최대 몇 개의 청크까지 만들 것인지 (제한 없으면 매우 큰 값) */
-    private final int maxNumChunks;
-
-    /**
-     * @param chunkSize     한 청크의 최대 토큰 수
-     * @param chunkOverlap  바로 다음 청크와 몇 개 토큰을 겹칠지
-     * @param maxNumChunks  (선택) 분할할 청크의 최대 개수 제한
-     */
     public CustomTextSplitter(int chunkSize, int chunkOverlap, int maxNumChunks) {
         // TextSplitter 부모 생성자 호출(디폴트)
         super();
@@ -48,10 +39,7 @@ public class CustomTextSplitter extends TextSplitter {
         this.encoding = registry.getEncoding(EncodingType.CL100K_BASE);
     }
 
-    /**
-     * TextSplitter가 요구하는 추상 메서드.
-     * 한 문서(단일 text)에 대한 분할 로직을 여기서 구현한다.
-     */
+     // TextSplitter가 요구하는 추상 메서드. 한 문서(단일 text)에 대한 분할 로직을 여기서 구현한다.
     @Override
     protected List<String> splitText(String text) {
         if (text == null || text.isBlank()) {
@@ -76,10 +64,8 @@ public class CustomTextSplitter extends TextSplitter {
         return result;
     }
 
-    // --------------------------------------------------------------------------------------
-    // 아래는 "TokenTextSplitter"에 있던 private 메서드를 여기서 그대로(또는 비슷하게) 재구현한 것.
-    // --------------------------------------------------------------------------------------
 
+    // 아래는 "TokenTextSplitter"에 있던 private 메서드를 여기서 그대로(또는 비슷하게) 재구현한 것.
     private List<Integer> getEncodedTokens(String text) {
         Assert.notNull(text, "Text must not be null");
         // jtokkit 라이브러리의 encode()가 IntArrayList(int[]) 형태를 반환 -> .boxed()로 List<Integer> 얻기
@@ -95,11 +81,9 @@ public class CustomTextSplitter extends TextSplitter {
         return this.encoding.decode(tokensIntArray);
     }
 
-    /**
-     * "chunkSize, chunkOverlap"을 적용해 실제로 토큰 리스트를 슬라이딩 윈도우 방식으로 자르는 핵심 로직.
-     * 예) chunkSize=100, chunkOverlap=20 => step=80씩 start 인덱스를 이동
-     */
 
+     // "chunkSize, chunkOverlap"을 적용해 실제로 토큰 리스트를 슬라이딩 윈도우 방식으로 자르는 핵심 로직.
+     // 예) chunkSize=100, chunkOverlap=20 => step=80씩 start 인덱스를 이동
     private List<List<Integer>> slidingWindowTokens(
             List<Integer> tokens,
             int chunkSize,
